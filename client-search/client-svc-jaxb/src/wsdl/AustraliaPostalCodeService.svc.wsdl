@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions name="AustraliaPostalCodeService" targetNamespace="http://www.restfulwebservices.net/ServiceContracts/2008/01" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:tns="http://www.restfulwebservices.net/ServiceContracts/2008/01" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex">
+	<wsdl:types>
+		<xsd:schema targetNamespace="http://www.restfulwebservices.net/ServiceContracts/2008/01/Imports">
+			<xsd:import schemaLocation="http://www.restfulwebservices.net/wcf/AustraliaPostalCodeService.svc?xsd=xsd0" namespace="http://www.restfulwebservices.net/ServiceContracts/2008/01"/>
+			<xsd:import schemaLocation="http://www.restfulwebservices.net/wcf/AustraliaPostalCodeService.svc?xsd=xsd3" namespace="http://GOTLServices.FaultContracts/2008/01"/>
+			<xsd:import schemaLocation="http://www.restfulwebservices.net/wcf/AustraliaPostalCodeService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/"/>
+			<xsd:import schemaLocation="http://www.restfulwebservices.net/wcf/AustraliaPostalCodeService.svc?xsd=xsd2" namespace="http://www.restfulwebservices.net/DataContracts/2008/01"/>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="IPostalCodeService_GetPostCodeDetailByPostCode_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetPostCodeDetailByPostCode"/>
+	</wsdl:message>
+	<wsdl:message name="IPostalCodeService_GetPostCodeDetailByPostCode_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetPostCodeDetailByPostCodeResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPostalCodeService_GetPostCodeDetailByPostCode_DefaultFaultContractFault_FaultMessage">
+		<wsdl:part name="detail" element="q1:DefaultFaultContract" xmlns:q1="http://GOTLServices.FaultContracts/2008/01"/>
+	</wsdl:message>
+	<wsdl:message name="IPostalCodeService_GetPostCodeDetailsByPlaceName_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetPostCodeDetailsByPlaceName"/>
+	</wsdl:message>
+	<wsdl:message name="IPostalCodeService_GetPostCodeDetailsByPlaceName_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetPostCodeDetailsByPlaceNameResponse"/>
+	</wsdl:message>
+	<wsdl:message name="IPostalCodeService_GetPostCodeDetailsByPlaceName_DefaultFaultContractFault_FaultMessage">
+		<wsdl:part name="detail" element="q2:DefaultFaultContract" xmlns:q2="http://GOTLServices.FaultContracts/2008/01"/>
+	</wsdl:message>
+	<wsdl:portType name="IPostalCodeService">
+		<wsdl:operation name="GetPostCodeDetailByPostCode">
+			<wsdl:input wsaw:Action="GetPostCodeDetailByPostCode" message="tns:IPostalCodeService_GetPostCodeDetailByPostCode_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.restfulwebservices.net/ServiceContracts/2008/01/IPostalCodeService/GetPostCodeDetailByPostCodeResponse" message="tns:IPostalCodeService_GetPostCodeDetailByPostCode_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.restfulwebservices.net/ServiceContracts/2008/01/IPostalCodeService/GetPostCodeDetailByPostCodeDefaultFaultContractFault" name="DefaultFaultContractFault" message="tns:IPostalCodeService_GetPostCodeDetailByPostCode_DefaultFaultContractFault_FaultMessage"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetPostCodeDetailsByPlaceName">
+			<wsdl:input wsaw:Action="GetPostCodeDetailsByPlaceName" message="tns:IPostalCodeService_GetPostCodeDetailsByPlaceName_InputMessage"/>
+			<wsdl:output wsaw:Action="http://www.restfulwebservices.net/ServiceContracts/2008/01/IPostalCodeService/GetPostCodeDetailsByPlaceNameResponse" message="tns:IPostalCodeService_GetPostCodeDetailsByPlaceName_OutputMessage"/>
+			<wsdl:fault wsaw:Action="http://www.restfulwebservices.net/ServiceContracts/2008/01/IPostalCodeService/GetPostCodeDetailsByPlaceNameDefaultFaultContractFault" name="DefaultFaultContractFault" message="tns:IPostalCodeService_GetPostCodeDetailsByPlaceName_DefaultFaultContractFault_FaultMessage"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="BasicHttpBinding_IPostalCodeService" type="tns:IPostalCodeService">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="GetPostCodeDetailByPostCode">
+			<soap:operation soapAction="GetPostCodeDetailByPostCode" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="DefaultFaultContractFault">
+				<soap:fault name="DefaultFaultContractFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetPostCodeDetailsByPlaceName">
+			<soap:operation soapAction="GetPostCodeDetailsByPlaceName" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="DefaultFaultContractFault">
+				<soap:fault name="DefaultFaultContractFault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="AustraliaPostalCodeService">
+		<wsdl:port name="BasicHttpBinding_IPostalCodeService" binding="tns:BasicHttpBinding_IPostalCodeService">
+			<soap:address location="http://www.restfulwebservices.net/wcf/AustraliaPostalCodeService.svc"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>
