@@ -1,0 +1,12 @@
+[role='banner'] h1 .logo-holder {
+    display: inline;
+}
+
+.updateButton {
+    margin-left: 0.25rem;
+}
+
+/* to make "read only" labels bold */
+span[data-wc-rofor] {
+    font-weight: bold;
+}

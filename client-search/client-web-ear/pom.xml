@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<name>client-web-ear</name>
+	<artifactId>client-web-ear</artifactId>
+
+	<parent>
+		<groupId>com.sample</groupId>
+		<artifactId>client-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<packaging>ear</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.sample</groupId>
+			<artifactId>client-web-war</artifactId>
+			<version>${project.version}</version>
+			<type>war</type>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ear-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+						</manifest>
+					</archive>
+					<displayName>${project.artifactId}</displayName>
+					<version>1.4</version>
+					<modules>
+						<webModule>
+							<groupId>com.sample</groupId>
+							<artifactId>client-web-war</artifactId>
+							<contextRoot>client</contextRoot>
+							<moduleId>WEB.com.sample.client.ui.servlet.ClientServlet</moduleId>
+							<bundleFileName>client-web-war.war</bundleFileName>
+						</webModule>
+					</modules>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

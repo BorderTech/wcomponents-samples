@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<jaxws:bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
+				xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+				xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+				xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+				xmlns:xs="http://www.w3.org/2001/XMLSchema"
+				wsdlLocation="../wsdl/AustraliaPostalCodeService.svc.wsdl"
+				version="2.0">
+
+	<!--
+	<jaxws:enableWrapperStyle>false</jaxws:enableWrapperStyle>
+	<jaxws:enableAsyncMapping>true</jaxws:enableAsyncMapping>
+	-->
+
+	<jaxws:bindings node="//wsdl:definitions/wsdl:types/xs:schema[@targetNamespace='http://www.restfulwebservices.net/ServiceContracts/2008/01/Imports']">
+		<jaxb:globalBindings generateElementProperty="false"
+							 generateIsSetMethod="true">
+
+			<!-- Make sure that the generated classes don't optimize the @XmlRootElement
+			attributes. -->
+			<xjc:simple />
+
+			<!-- Make sure the generated classes implement java.io.Serializable -->
+			<jaxb:serializable uid="1" />
+			
+		</jaxb:globalBindings>
+	</jaxws:bindings>
+
+</jaxws:bindings>
