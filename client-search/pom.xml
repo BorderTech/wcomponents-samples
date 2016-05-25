@@ -58,7 +58,6 @@
 		<module>client-svc-jaxb</module>
 		<module>client-model</module>
 		<module>client-web</module>
-		<module>client-web-ear</module>
 		<module>client-web-lde</module>
 		<module>client-web-war</module>
 	</modules>
