@@ -11,4 +11,4 @@ Follow these commands to fetch the sample source, build and run:
 3. `mvn package`
 4. `cd client-search/client-web-war`
 5. `mvn jetty:run`
-6.  Access sample at [client-sample](http://localhost:8080/app)
+6.  Access sample at `http://localhost:8080/app`
