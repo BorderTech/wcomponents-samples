@@ -1,9 +1,10 @@
 package com.sample.compass.services;
 
-import com.sample.compass.model.DataCriteria;
-import com.sample.compass.model.ProfileData;
-import com.sample.compass.model.ProfileId;
-import com.sample.compass.model.ProfilePoint;
+import com.sample.compass.model.DataModel;
+import com.sample.compass.model.DataSource;
+import com.sample.compass.model.ItemMeta;
+import com.sample.compass.model.Item;
+import com.sample.compass.model.Report;
 import java.util.List;
 
 /**
@@ -15,26 +16,35 @@ import java.util.List;
 public interface CompassServicesHelper {
 
 	/**
-	 * @param profileId the profile id to retrieve its children for
+	 * @param profileItem the profile id to retrieve its children for
 	 * @return the children profile points
 	 * @throws ServiceException a service exception
 	 */
-	List<ProfilePoint> retrieveProfilePoints(final ProfileId profileId) throws ServiceException;
+	List<Item> retrieveProfileItems(final Item profileItem) throws ServiceException;
 
 	/**
 	 *
-	 * @param criteria the profile criteria
-	 * @return the data for the profile criteria
+	 * @param dataSource the profile data source
+	 * @return the data for the data source
 	 * @throws ServiceException a service exception
 	 */
-	ProfileData retrieveProfileData(final DataCriteria criteria) throws ServiceException;
+	DataModel retrieveData(final DataSource dataSource) throws ServiceException;
 
 	/**
 	 *
-	 * @param profileId the profile id to retrieve the properties for
+	 * @param profileItem the profile id to retrieve the properties for
 	 * @return the properties for the profile point
 	 * @throws ServiceException a service exception
 	 */
-	ProfileData retrieveProfileProperties(final ProfileId profileId) throws ServiceException;
+	ItemMeta retrieveItemProperties(final Item profileItem) throws ServiceException;
+
+	/**
+	 *
+	 * @param profileItem the profile id to retrieve the report for
+	 * @param reportId the report id
+	 * @return the report details
+	 * @throws ServiceException a service exception
+	 */
+	Report retrieveReportDetails(final Item profileItem, final String reportId) throws ServiceException;
 
 }

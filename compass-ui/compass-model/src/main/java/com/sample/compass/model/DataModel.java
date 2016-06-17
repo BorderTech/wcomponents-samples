@@ -7,15 +7,15 @@ import java.io.Serializable;
  * @author Jonathan Austin
  * @since 1.0.0
  */
-public interface ProfileData extends Serializable {
+public interface DataModel extends Serializable {
 
 	public int getColumnCount();
 
 	public int getRowCount();
 
-	public AttributeMetaData getAttributeMetaData(final int col);
+	public AttributeMeta getAttributeMeta(final int col);
 
-	public Object getValueAt(final int row, final int col);
+	public Object getAttributeValue(final int row, final int col);
 
 	public String getRowKey(final int row);
 

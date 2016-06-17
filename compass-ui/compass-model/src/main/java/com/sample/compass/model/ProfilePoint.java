@@ -11,53 +11,59 @@ import java.util.Objects;
  */
 public class ProfilePoint implements Serializable {
 
-
-	private final DataType type;
-	private final ProfileId profileId;
-	private final String classname;
+	private final String domainId;
+	private final String environmentId;
+	private final String id;
 	private final String name;
-	private final int childCount;
 
-	public ProfilePoint(final DataType type, final ProfileId profileId, final String classname, final String name, final int childCount) {
-		this.type = type;
-		this.profileId = profileId;
-		this.classname = classname;
+	public ProfilePoint(final String domainId, final String name) {
+		this.domainId = domainId;
+		this.environmentId = null;
+		this.id = null;
 		this.name = name;
-		this.childCount = childCount > 0 ? childCount : 0;
 	}
 
-	public DataType getType() {
-		return type;
+	public ProfilePoint(final String domainId, final String environmentId, final String name) {
+		this.domainId = domainId;
+		this.environmentId = environmentId;
+		this.id = null;
+		this.name = name;
 	}
 
-	public ProfileId getProfileId() {
-		return profileId;
+	public ProfilePoint(final String domainId, final String environmentId, final String id, final String name) {
+		this.domainId = domainId;
+		this.environmentId = environmentId;
+		this.id = id;
+		this.name = name;
 	}
 
-	public String getClassname() {
-		return classname;
+	public String getDomainId() {
+		return domainId;
+	}
+
+	public String getEnvironmentId() {
+		return environmentId;
+	}
+
+	public String getId() {
+		return id;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public int getChildCount() {
-		return childCount;
-	}
-
 	@Override
 	public int hashCode() {
-		int hash = 5;
-		hash = 29 * hash + Objects.hashCode(this.type);
-		hash = 29 * hash + Objects.hashCode(this.profileId);
-		hash = 29 * hash + Objects.hashCode(this.classname);
-		hash = 29 * hash + Objects.hashCode(this.name);
+		int hash = 7;
+		hash = 59 * hash + Objects.hashCode(this.domainId);
+		hash = 59 * hash + Objects.hashCode(this.environmentId);
+		hash = 59 * hash + Objects.hashCode(this.id);
 		return hash;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -68,16 +74,13 @@ public class ProfilePoint implements Serializable {
 			return false;
 		}
 		final ProfilePoint other = (ProfilePoint) obj;
-		if (!Objects.equals(this.classname, other.classname)) {
+		if (!Objects.equals(this.domainId, other.domainId)) {
 			return false;
 		}
-		if (!Objects.equals(this.name, other.name)) {
+		if (!Objects.equals(this.environmentId, other.environmentId)) {
 			return false;
 		}
-		if (this.type != other.type) {
-			return false;
-		}
-		return Objects.equals(this.profileId, other.profileId);
+		return Objects.equals(this.id, other.id);
 	}
 
 }
