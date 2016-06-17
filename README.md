@@ -2,7 +2,7 @@
 Sample web applications to demonstrate WComponents and provide "starter" projects
 
 ## Live Demo
-A live demo of this application can be viewed [here](http://wcsamples.australiaeast.cloudapp.azure.com:8080/app).
+A live demo of this application can be viewed [here](http://wcomponents-bordertech.rhcloud.com/client/app).
 
 ## Build and Run Sample
 If you wish to build the samples you will need [Apache Maven](https://maven.apache.org/) installed.
