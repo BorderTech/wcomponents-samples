@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app id="WServletCompassWebApp_ID">
+	<display-name>Compass</display-name>
+
+	<servlet>
+		<servlet-name>AppServlet</servlet-name>
+		<servlet-class>com.sample.compass.ui.servlet.AppServlet</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>themeServlet</servlet-name>
+		<servlet-class>com.github.bordertech.wcomponents.servlet.ThemeServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>AppServlet</servlet-name>
+		<url-pattern>/app</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>themeServlet</servlet-name>
+		<url-pattern>/theme/*</url-pattern>
+	</servlet-mapping>
+
+</web-app>

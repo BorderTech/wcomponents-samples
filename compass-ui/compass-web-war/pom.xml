@@ -3,30 +3,34 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<name>client-model</name>
-	<artifactId>client-model</artifactId>
+	<name>compass-web-war</name>
+	<artifactId>compass-web-war</artifactId>
 
 	<parent>
 		<groupId>com.sample</groupId>
-		<artifactId>client-parent</artifactId>
+		<artifactId>compass-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
-	<properties>
-		<wc.qa.skip>false</wc.qa.skip>
-	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>8.1.16.v20140903</version>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencies>
-
 		<dependency>
-			<scope>test</scope>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>com.sample</groupId>
+			<artifactId>compass-web</artifactId>
+			<version>${project.version}</version>
 		</dependency>
-
 	</dependencies>
 
 </project>

@@ -3,12 +3,12 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<name>client-model</name>
-	<artifactId>client-model</artifactId>
+	<name>compass-model</name>
+	<artifactId>compass-model</artifactId>
 
 	<parent>
 		<groupId>com.sample</groupId>
-		<artifactId>client-parent</artifactId>
+		<artifactId>compass-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
