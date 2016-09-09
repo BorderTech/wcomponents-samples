@@ -11,6 +11,10 @@ import java.util.List;
  */
 public class Chart implements Serializable {
 
+	public enum ChartType {
+		PIE, LINE, BAR;
+	}
+
 	private final String chartId;
 	private String title;
 	private List<DataSource> dataSources;

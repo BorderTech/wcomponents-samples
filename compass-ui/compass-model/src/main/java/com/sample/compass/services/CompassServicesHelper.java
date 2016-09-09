@@ -2,8 +2,11 @@ package com.sample.compass.services;
 
 import com.sample.compass.model.DataModel;
 import com.sample.compass.model.DataSource;
-import com.sample.compass.model.ItemMeta;
 import com.sample.compass.model.Item;
+import com.sample.compass.model.ItemClass;
+import com.sample.compass.model.ItemMeta;
+import com.sample.compass.model.ItemObject;
+import com.sample.compass.model.ProfilePoint;
 import com.sample.compass.model.Report;
 import java.util.List;
 
@@ -16,11 +19,19 @@ import java.util.List;
 public interface CompassServicesHelper {
 
 	/**
-	 * @param profileItem the profile id to retrieve its children for
-	 * @return the children profile points
+	 * @param profilePoint the profile id to retrieve its classes
+	 * @return the classes for this profile point
 	 * @throws ServiceException a service exception
 	 */
-	List<Item> retrieveProfileItems(final Item profileItem) throws ServiceException;
+	List<ItemClass> retrieveClasses(final ProfilePoint profilePoint) throws ServiceException;
+
+	/**
+	 * @param profilePoint the profile id to retrieve its objects for
+	 * @param className the class name of the objects to retrieve
+	 * @return the objects for this profile point and matching class name
+	 * @throws ServiceException a service exception
+	 */
+	List<ItemObject> retrieveObjects(final ProfilePoint profilePoint, final String className) throws ServiceException;
 
 	/**
 	 *

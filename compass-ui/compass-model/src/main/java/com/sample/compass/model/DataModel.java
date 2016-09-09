@@ -13,7 +13,7 @@ public interface DataModel extends Serializable {
 
 	public int getRowCount();
 
-	public AttributeMeta getAttributeMeta(final int col);
+	public DataAttributeMeta getAttributeMeta(final int col);
 
 	public Object getAttributeValue(final int row, final int col);
 
