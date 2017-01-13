@@ -12,8 +12,8 @@
 			<path path="${maven.plugin.classpath}" />
 		</path>
 
-		<available property="findbugs.present" file="${basedir}/abn-sample/abn-web/target/findbugs-rep/findbugsXml.xml" />
-		<available property="jacoco.present" file="${basedir}/abn-sample/abn-web/target/jacoco.exec" />
+		<available property="findbugs.present" file="${basedir}/client-web/target/findbugs-rep/findbugsXml.xml" />
+		<available property="jacoco.present" file="${basedir}/client-model/target/jacoco.exec" />
 
 		<echo message="Reports - Findbugs Present: ${findbugs.present}" />
 		<echo message="Reports - Jacoco Present: ${jacoco.present}" />
@@ -53,24 +53,28 @@
 
 		<report>
 			<executiondata>
-				<fileset dir="${basedir}/abn-sample/abn-web/target">
+				<fileset dir="${basedir}/client-model/target">
 					<include name="jacoco.exec" />
 				</fileset>
 				<!--
-				<fileset dir="${basedir}/wcomponents-lde/target">
+				<fileset dir="${basedir}/client-web-lde/target">
 					<include name="jacoco.exec" />
 				</fileset>
 				-->
 			</executiondata>
-			<structure name="WComponents Coverage">
-				<group name="WComponents">
+			<structure name="Client Demo Coverage">
+				<group name="Client Demo">
 					<classfiles>
-						<fileset dir="${basedir}/wcomponents-core/target/classes" />
-						<fileset dir="${basedir}/wcomponents-lde/target/classes" />
+						<fileset dir="${basedir}/client-model/target/classes" />
+						<!--
+						<fileset dir="${basedir}/client-web-lde/target/classes" />
+						-->
 					</classfiles>
 					<sourcefiles encoding="UTF-8">
-						<fileset dir="${basedir}/wcomponents-core/src/main/java" />
-						<fileset dir="${basedir}/wcomponents-lde/src/main/java" />
+						<fileset dir="${basedir}/client-model/src/main/java" />
+						<!--
+						<fileset dir="${basedir}/client-web-lde/src/main/java" />
+						-->
 					</sourcefiles>
 				</group>
 			</structure>
@@ -78,17 +82,6 @@
 			<xml destfile="${build.dir}/coverage-report.xml" />
 			<csv destfile="${build.dir}/coverage-report.csv" />
 		</report>
-
-		<echo message="Reports - Renaming Jacoco report resources." />
-
-		<!-- The jacoco "." files are not handled by the github page server. -->
-		<!-- Rename jacoco ".sessions.html" file.-->
-		<move file="${site.dir}/coverage-report/.sessions.html" tofile="${site.dir}/coverage-report/sessions.html" />
-		<replace dir="${site.dir}/coverage-report" token=".sessions.html" value="sessions.html" />
-
-		<!-- Rename jacoco ".resources" files.-->
-		<move file="${site.dir}/coverage-report/.resources" tofile="${site.dir}/coverage-report/resources" />
-		<replace dir="${site.dir}/coverage-report" token=".resources/" value="resources/" />
 
 		<echo message="Reports - Jacoco report complete." />
 

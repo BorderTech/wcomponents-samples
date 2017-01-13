@@ -3,6 +3,7 @@ package com.sample.client.ui.application;
 import com.github.bordertech.wcomponents.HeadingLevel;
 import com.github.bordertech.wcomponents.Margin;
 import com.github.bordertech.wcomponents.MessageContainer;
+import com.github.bordertech.wcomponents.Request;
 import com.github.bordertech.wcomponents.WApplication;
 import com.github.bordertech.wcomponents.WCardManager;
 import com.github.bordertech.wcomponents.WComponent;
@@ -93,6 +94,12 @@ public class ClientApp extends WApplication implements MessageContainer {
 		// IDs
 		header.setIdName("hdr");
 		messages.setIdName("msgs");
+	}
+
+	@Override
+	protected void preparePaintComponent(final Request request) {
+		// Just for a PMD error
+		super.preparePaintComponent(request);
 	}
 
 	public void showCurrency() {

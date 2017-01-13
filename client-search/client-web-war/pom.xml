@@ -15,6 +15,10 @@
 
 	<packaging>war</packaging>
 
+	<properties>
+		<multiproject.basedir>${basedir}/../..</multiproject.basedir>
+	</properties>
+
 	<build>
 		<plugins>
 			<plugin>
