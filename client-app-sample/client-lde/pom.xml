@@ -3,8 +3,8 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<name>client-web-war</name>
-	<artifactId>client-web-war</artifactId>
+	<name>client-lde</name>
+	<artifactId>client-lde</artifactId>
 
 	<parent>
 		<groupId>com.sample</groupId>
@@ -13,28 +13,31 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<properties>
 		<multiproject.basedir>${basedir}/../..</multiproject.basedir>
 	</properties>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>8.1.16.v20140903</version>
-			</plugin>
-		</plugins>
-	</build>
-
 	<dependencies>
+
+		<!--
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+		</dependency>
+		-->
 		<dependency>
 			<groupId>com.sample</groupId>
 			<artifactId>client-web</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.github.bordertech.wcomponents</groupId>
+			<artifactId>wcomponents-lde</artifactId>
+		</dependency>
+
 	</dependencies>
 
 </project>

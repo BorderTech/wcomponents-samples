@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.sample</groupId>
+		<artifactId>sample-config-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../sample-config-parent/pom.xml</relativePath>
+	</parent>
+
+	<name>chart-c3-parent</name>
+
+	<groupId>com.sample</groupId>
+	<artifactId>chart-c3-parent</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+
+	<packaging>pom</packaging>
+
+	<properties>
+		<multiproject.basedir>${basedir}/..</multiproject.basedir>
+	</properties>
+
+	<build>
+		<plugins>
+			<!-- Plugins to not inherit to child modules. -->
+			<!-- Generate Reports (Findbugs, Coverage). -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<inherited>false</inherited>
+			</plugin>
+
+			<!-- Generate badges. -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>xml-maven-plugin</artifactId>
+				<inherited>false</inherited>
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<reporting>
+		<plugins>
+
+			<!-- Reporting plugins that need to be set to not inherit. (Self aggregating) -->
+
+			<!-- Produce a cross-reference of the project's source. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>2.5</version>
+				<inherited>false</inherited>
+			</plugin>
+
+			<!-- Generate Javadoc. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.3</version>
+				<inherited>false</inherited>
+			</plugin>
+
+			<!-- Generate the web interface version of the test results. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.19.1</version>
+				<inherited>false</inherited>
+			</plugin>
+
+			<!-- QA Reports. -->
+			<!-- Generate the Checkstyle report. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.17</version>
+				<inherited>false</inherited>
+			</plugin>
+
+			<!-- PMD and CPD Reports. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>3.5</version>
+				<inherited>false</inherited>
+			</plugin>
+
+		</plugins>
+	</reporting>
+
+	<modules>
+		<module>chart-c3-web</module>
+		<module>chart-c3-war</module>
+	</modules>
+
+</project>

@@ -3,8 +3,8 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<name>client-web-lde</name>
-	<artifactId>client-web-lde</artifactId>
+	<name>client-war</name>
+	<artifactId>client-war</artifactId>
 
 	<parent>
 		<groupId>com.sample</groupId>
@@ -13,31 +13,28 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<properties>
 		<multiproject.basedir>${basedir}/../..</multiproject.basedir>
 	</properties>
 
-	<dependencies>
+	<build>
+		<!-- Allows project to be run via mvn jetty:run from the web-war directory. -->
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 
-		<!--
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-		</dependency>
-		-->
+	<dependencies>
 		<dependency>
 			<groupId>com.sample</groupId>
 			<artifactId>client-web</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>com.github.bordertech.wcomponents</groupId>
-			<artifactId>wcomponents-lde</artifactId>
-		</dependency>
-
 	</dependencies>
 
 </project>
