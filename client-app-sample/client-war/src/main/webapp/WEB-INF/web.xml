@@ -8,19 +8,9 @@
 		<servlet-class>com.sample.client.ui.servlet.ClientServlet</servlet-class>
 	</servlet>
 
-	<servlet>
-		<servlet-name>themeServlet</servlet-name>
-		<servlet-class>com.github.bordertech.wcomponents.servlet.ThemeServlet</servlet-class>
-	</servlet>
-
 	<servlet-mapping>
 		<servlet-name>ClientServlet</servlet-name>
-		<url-pattern>/app</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>themeServlet</servlet-name>
-		<url-pattern>/theme/*</url-pattern>
+		<url-pattern>/app/*</url-pattern>
 	</servlet-mapping>
 
 </web-app>
