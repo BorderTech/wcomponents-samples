@@ -29,3 +29,8 @@ nb-configuration.xml
 
 # Icon must end with two \r
 Icon
+
+
+### WComponents ###
+local_app.properties
+
