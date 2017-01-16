@@ -4,6 +4,7 @@ import com.github.bordertech.wcomponents.ContentAccess;
 import com.github.bordertech.wcomponents.HeadingLevel;
 import com.github.bordertech.wcomponents.Margin;
 import com.github.bordertech.wcomponents.Request;
+import com.github.bordertech.wcomponents.UIContextHolder;
 import com.github.bordertech.wcomponents.WAjaxControl;
 import com.github.bordertech.wcomponents.WApplication;
 import com.github.bordertech.wcomponents.WContent;
@@ -24,6 +25,8 @@ public class MyChart extends WApplication {
 
 	private final WContent jsonData = new WContent();
 
+	private final WTemplate configC3Script = new WTemplate("/hbs/configC3.hbs", TemplateRendererFactory.TemplateEngine.HANDLEBARS);
+
 	private final WTemplate configChartScript = new WTemplate("/hbs/configChart.hbs", TemplateRendererFactory.TemplateEngine.HANDLEBARS);
 
 	private final WDropdown drpType = new WDropdown(Arrays.asList("bar", "line", "pie"));
@@ -35,8 +38,11 @@ public class MyChart extends WApplication {
 	 */
 	public MyChart() {
 
-		// C3 CSS 
+		// C3 CSS
 		addCssUrl("js/lib/c3-0.4.11.css");
+
+		// C3 Config script
+		add(configC3Script);
 
 		// Data for the chart
 		jsonData.setContentAccess(new JsonContentAccess() {
@@ -50,7 +56,7 @@ public class MyChart extends WApplication {
 		WPanel root = new WPanel();
 		root.setMargin(new Margin(24));
 		add(root);
-		root.add(new WHeading(HeadingLevel.H1, "Charting Example"));
+		root.add(new WHeading(HeadingLevel.H1, "WComponents C3 Charting Example"));
 
 		// Dropdown that changes the chart type
 		WFieldLayout layout = new WFieldLayout(WFieldLayout.LAYOUT_STACKED);
@@ -72,6 +78,11 @@ public class MyChart extends WApplication {
 	@Override
 	protected void preparePaintComponent(final Request request) {
 		super.preparePaintComponent(request);
+		if (!isInitialised()) {
+			String baseUrl = UIContextHolder.getCurrent().getEnvironment().getHostFreeBaseUrl();
+			configC3Script.addParameter("baseUrl", baseUrl);
+			setInitialised(true);
+		}
 		setupChartConfig();
 	}
 
