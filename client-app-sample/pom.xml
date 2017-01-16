@@ -4,9 +4,9 @@
 
 	<parent>
 		<groupId>com.sample</groupId>
-		<artifactId>sample-parent</artifactId>
+		<artifactId>sample-config-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
+		<relativePath>../sample-config-parent/pom.xml</relativePath>
 	</parent>
 
 	<name>client-parent</name>
@@ -94,8 +94,8 @@
 		<module>client-svc-jaxb</module>
 		<module>client-model</module>
 		<module>client-web</module>
-		<module>client-web-lde</module>
-		<module>client-web-war</module>
+		<module>client-lde</module>
+		<module>client-war</module>
 	</modules>
 
 </project>

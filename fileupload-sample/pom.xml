@@ -4,9 +4,9 @@
 
 	<parent>
 		<groupId>com.sample</groupId>
-		<artifactId>sample-parent</artifactId>
+		<artifactId>sample-config-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
+		<relativePath>../sample-config-parent/pom.xml</relativePath>
 	</parent>
 
 	<name>fileupload-parent</name>

@@ -1,0 +1,15 @@
+<div id="{{chartPanelId}}-chart"></div>
+<script type="text/javascript">
+    // COMPAT needed for polyfills in older browsers (IE)
+    require(["wc/compat/compat!", "wc/dom/initialise"], function(compat, initialise){
+	function doInit(){
+		window.setTimeout(function() {
+		    require(["./js/fruitChartExample.js"], function(fruitChart){
+		    fruitChart("{{dataUrl}}", "#{{chartPanelId}}-chart", "{{chartType}}");
+		    });}, 500);
+	}
+	// Wait until DOM is ready
+	initialise.register({postInit: doInit});
+    });
+
+</script>
