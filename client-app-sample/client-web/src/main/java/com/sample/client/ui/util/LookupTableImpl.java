@@ -78,6 +78,9 @@ public class LookupTableImpl implements LookupTable {
 
 	@Override
 	public String getCode(final Object table, final Object entry) {
+		if (table instanceof TableDetails && ((TableDetails) table).isWithNull() && entry == null) {
+			return ((TableDetails) table).getNullCode();
+		}
 		if (entry instanceof CodeOption) {
 			return ((CodeOption) entry).getCode();
 		}
@@ -88,6 +91,9 @@ public class LookupTableImpl implements LookupTable {
 	public String getDescription(final Object table, final Object entry) {
 		if (table == null) {
 			return null;
+		}
+		if (entry == null && table instanceof TableDetails && ((TableDetails) table).isWithNull()) {
+			return ((TableDetails) table).getNullDescription();
 		}
 		if (entry instanceof CodeOption) {
 			return ((CodeOption) entry).getDescription();
@@ -118,6 +124,10 @@ public class LookupTableImpl implements LookupTable {
 
 		private final String table;
 
+		private static final String NULL_CODE = "";
+
+		private static final String NULL_DESCRIPTION = "";
+
 		public TableDetails(final String table) {
 			this(table, false);
 		}
@@ -138,6 +148,14 @@ public class LookupTableImpl implements LookupTable {
 		public String getKey() {
 			String flag = isWithNull() ? "WITH-NULL" : "NO-NULL";
 			return table + flag;
+		}
+
+		public String getNullCode() {
+			return isWithNull() ? NULL_CODE : null;
+		}
+
+		public String getNullDescription() {
+			return isWithNull() ? NULL_DESCRIPTION : null;
 		}
 	}
 
