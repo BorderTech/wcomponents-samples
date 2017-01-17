@@ -3,8 +3,6 @@ package com.sample.fileupload;
 import com.github.bordertech.wcomponents.Action;
 import com.github.bordertech.wcomponents.ActionEvent;
 import com.github.bordertech.wcomponents.HeadingLevel;
-import com.github.bordertech.wcomponents.ImageResource;
-import com.github.bordertech.wcomponents.InternalResource;
 import com.github.bordertech.wcomponents.Margin;
 import com.github.bordertech.wcomponents.WAjaxControl;
 import com.github.bordertech.wcomponents.WApplication;
@@ -35,7 +33,7 @@ public class DemoApp extends WApplication {
 
 	private static final int DEFAULT_IMAGE_WIDTH = 300;
 	private static final int DEFAULT_IMAGE_HEIGHT = 400;
-	private static final String OVERLAY_URL = "/images/overlay.png";
+	private static final String OVERLAY_URL = "images/overlay.png";
 
 	private final WMessages messages = new WMessages();
 
@@ -85,8 +83,7 @@ public class DemoApp extends WApplication {
 
 		final WImageEditor editor = new WImageEditor();
 		editor.setUseCamera(true);
-		InternalResource overlay = new ImageResource(OVERLAY_URL, "Overlay image shows visible guidlines");
-		editor.setOverlayUrl(overlay.getTargetUrl());
+		editor.setOverlayUrl(OVERLAY_URL);
 		editor.setSize(new Dimension(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT));
 
 		widget.setEditor(editor);
@@ -159,4 +156,5 @@ public class DemoApp extends WApplication {
 		right.add(new WAjaxControl(widget, imageHolder));
 
 	}
+
 }
