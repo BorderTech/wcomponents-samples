@@ -2,10 +2,14 @@ package com.sample.fileupload;
 
 import com.github.bordertech.wcomponents.Action;
 import com.github.bordertech.wcomponents.ActionEvent;
+import com.github.bordertech.wcomponents.AjaxTarget;
 import com.github.bordertech.wcomponents.HeadingLevel;
 import com.github.bordertech.wcomponents.Margin;
+import com.github.bordertech.wcomponents.Request;
 import com.github.bordertech.wcomponents.WAjaxControl;
 import com.github.bordertech.wcomponents.WApplication;
+import com.github.bordertech.wcomponents.WButton;
+import com.github.bordertech.wcomponents.WComponent;
 import com.github.bordertech.wcomponents.WContainer;
 import com.github.bordertech.wcomponents.WEditableImage;
 import com.github.bordertech.wcomponents.WFieldLayout;
@@ -17,11 +21,17 @@ import com.github.bordertech.wcomponents.WMessages;
 import com.github.bordertech.wcomponents.WMultiFileWidget;
 import com.github.bordertech.wcomponents.WMultiFileWidget.FileWidgetUpload;
 import com.github.bordertech.wcomponents.WPanel;
+import com.github.bordertech.wcomponents.WSection;
 import com.github.bordertech.wcomponents.WText;
 import com.github.bordertech.wcomponents.layout.ColumnLayout;
 import com.github.bordertech.wcomponents.util.HtmlClassProperties;
+import com.github.bordertech.wcomponents.validation.Diagnostic;
+import com.github.bordertech.wcomponents.validation.ValidatingAction;
 import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Multifile upload with AJAX trigger.
@@ -36,6 +46,52 @@ public class DemoApp extends WApplication {
 	private static final String OVERLAY_URL = "images/overlay.png";
 
 	private final WMessages messages = new WMessages();
+	private final WMultiFileWidget widget = new WMultiFileWidget() {
+		@Override
+		protected void validateComponent(final List<Diagnostic> diags) {
+			super.validateComponent(diags);
+			if (!checkAllValid()) {
+				diags.add(createErrorDiagnostic("Not all files are valid"));
+			}
+		}
+
+		@Override
+		protected void doHandleUploadRequest(final Request request) {
+			super.doHandleUploadRequest(request);
+			if (isNewUpload()) {
+				int idx = getFiles().size() - 1;
+				FileWidgetUpload upload = getFiles().get(idx);
+				ValidatingPanel panel = new ValidatingPanel();
+				validatingContainer.add(panel);
+				panel.setRecordId(upload);
+				panel.doStartLoading();
+			}
+		}
+	};
+
+	private final WImage image = new WEditableImage(widget) {
+		@Override
+		public String getImageUrl() {
+			String fileId = (String) getAttribute("image-fileid");
+			if (fileId != null) {
+				// Get the url each time to allow for step count in the URL
+				return widget.getFileUrl(fileId);
+			}
+			return null;
+		}
+	};
+
+	private final WFigure imageHolder = new WFigure(image, "") {
+		@Override
+		public boolean isHidden() {
+			return image.getImageUrl() == null;
+		}
+	};
+
+	private final WPanel ajaxPanel = new WPanel(WPanel.Type.BOX);
+	private final WAjaxControl ajaxWidget = new WAjaxControl(widget, new AjaxTarget[]{imageHolder, ajaxPanel});
+
+	private final WContainer validatingContainer = new WContainer();
 
 	/**
 	 * Construct.
@@ -48,17 +104,18 @@ public class DemoApp extends WApplication {
 		header.add(new WHeading(HeadingLevel.H1, "Fileupload Sample"));
 
 		// Detail
-		WPanel detail = new WPanel();
-		add(detail);
+		WSection section = new WSection("Upload");
+		section.setMargin(new Margin(12));
+		add(section);
 
+		WPanel content = section.getContent();
 		// Messages
-		detail.add(messages);
+		content.add(messages);
 
 		WPanel split = new WPanel();
-		split.setMargin(new Margin(12));
 		split.setLayout(new ColumnLayout(new int[]{50, 50}, 12, 0));
 		split.setHtmlClass(HtmlClassProperties.RESPOND);
-		detail.add(split);
+		content.add(split);
 
 		WContainer left = new WContainer();
 		WContainer right = new WContainer();
@@ -74,7 +131,7 @@ public class DemoApp extends WApplication {
 		WFieldLayout layout = new WFieldLayout(WFieldLayout.LAYOUT_STACKED);
 		left.add(layout);
 
-		final WMultiFileWidget widget = new WMultiFileWidget();
+		widget.setMandatory(true);
 		widget.setUseThumbnails(true);
 		widget.setDropzone(split);
 		widget.setFileTypes(new String[]{"image/*"});
@@ -95,24 +152,6 @@ public class DemoApp extends WApplication {
 
 		contentPanel.add(new WHeading(HeadingLevel.H2, "File View"));
 
-		final WImage image = new WEditableImage(widget) {
-			@Override
-			public String getImageUrl() {
-				String fileId = (String) getAttribute("image-fileid");
-				if (fileId != null) {
-					// Get the url each time to allow for step count in the URL
-					return widget.getFileUrl(fileId);
-				}
-				return null;
-			}
-		};
-
-		final WFigure imageHolder = new WFigure(image, "") {
-			@Override
-			public boolean isHidden() {
-				return image.getImageUrl() == null;
-			}
-		};
 		contentPanel.add(imageHolder);
 
 		// File AJAX action (ie selected)
@@ -138,7 +177,7 @@ public class DemoApp extends WApplication {
 			}
 		});
 
-		// File changed action (removed from list)
+		// File changed action (added/removed from list)
 		widget.setActionOnChange(new Action() {
 			@Override
 			public void execute(final ActionEvent event) {
@@ -150,11 +189,136 @@ public class DemoApp extends WApplication {
 						contentPanel.reset();
 					}
 				}
+				checkPanels();
 			}
 		});
 
-		right.add(new WAjaxControl(widget, imageHolder));
+		// AJAX Validation
+		left.add(ajaxPanel);
+		ajaxPanel.add(validatingContainer);
+		ajaxPanel.add(ajaxWidget);
+//		ajaxPanel.add(ajaxPolling);
+//		ajaxPolling.setDelay(289);
 
+		validatingContainer.setNamingContext(true);
+		validatingContainer.setIdName("val");
+
+		// Validation Button
+		WButton button = new WButton("Validate");
+		left.add(button);
+
+		button.setAction(new ValidatingAction(messages.getValidationErrors(), layout) {
+			@Override
+			public void executeOnValid(final ActionEvent event) {
+				messages.success("OK.");
+			}
+		});
+
+	}
+
+	private void checkPanels() {
+		if (validatingContainer.getChildCount() == 0) {
+			return;
+		}
+		List<FileWidgetUpload> files = widget.getFiles();
+		for (int i = validatingContainer.getChildCount(); i > 0; i--) {
+			ValidatingPanel panel = (ValidatingPanel) validatingContainer.getChildAt(i - 1);
+			if (!files.contains(panel.getRecordId())) {
+				validatingContainer.remove(panel);
+			}
+		}
+	}
+
+	private boolean checkAllValid() {
+		for (WComponent panel : validatingContainer.getChildren()) {
+			ValidatingPanel validating = (ValidatingPanel) panel;
+			if (!validating.isValidFile()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static class ValidatingPanel extends AbstractPollingPanel<ValidatingResult, FileWidgetUpload> {
+
+		private final WHeading heading = new WHeading(HeadingLevel.H2, "");
+		private final WMessages messages = new WMessages(true);
+
+		public ValidatingPanel() {
+			super(null, 267, true);
+
+			getContent().add(messages);
+			getStartButton().setVisible(false);
+		}
+
+		@Override
+		protected void setupLoadingMessage(final WContainer ajaxContainer) {
+			super.setupLoadingMessage(ajaxContainer);
+		}
+
+		@Override
+		protected void doInitContent(final Request request) {
+			String name = getRecordId().getFile().getFileName();
+			heading.setText(name);
+		}
+
+		public boolean isValidFile() {
+			return getPanelStatus() == PanelStatus.COMPLETE && messages.getErrorMessages().isEmpty();
+		}
+
+		@Override
+		protected void handleSuccessfulServiceResponse(final ValidatingResult response) {
+			FileWidgetUpload file = getRecordId();
+			if (response.getMessages().isEmpty()) {
+				messages.info("File [" + file.getFile().getFileName() + "] is valid");
+			} else {
+				for (String msg : response.getMessages()) {
+					messages.info("File [" + file.getFile().getFileName() + "] is not valid");
+					messages.error(msg);
+				}
+			}
+		}
+
+		@Override
+		protected ValidatingResult doServiceCall(final FileWidgetUpload recordId) throws PollingServiceException {
+
+			String fileName = recordId.getFile().getFileName();
+			ValidatingResult result = new ValidatingResult();
+
+			if (fileName.contains("bad")) {
+				result.addMessage("Bad file name");
+			} else if (fileName.contains("long")) {
+				try {
+					Thread.currentThread().sleep(10000);
+				} catch (Exception e) {
+
+				}
+			} else if (fileName.contains("error")) {
+				throw new PollingServiceException("Exception validting file");
+			}
+			return result;
+		}
+
+	}
+
+	public static class ValidatingResult {
+
+		private List<String> messages;
+
+		public void addMessage(final String message) {
+			if (messages == null) {
+				messages = new ArrayList<>();
+			}
+			messages.add(message);
+		}
+
+		public List<String> getMessages() {
+			if (messages == null) {
+				return Collections.EMPTY_LIST;
+			} else {
+				return messages;
+			}
+		}
 	}
 
 }

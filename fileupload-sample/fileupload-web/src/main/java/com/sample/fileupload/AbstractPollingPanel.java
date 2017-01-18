@@ -4,17 +4,25 @@ import com.github.bordertech.wcomponents.Action;
 import com.github.bordertech.wcomponents.ActionEvent;
 import com.github.bordertech.wcomponents.AjaxHelper;
 import com.github.bordertech.wcomponents.Request;
+import com.github.bordertech.wcomponents.UIContextHolder;
 import com.github.bordertech.wcomponents.WAjaxControl;
 import com.github.bordertech.wcomponents.WButton;
 import com.github.bordertech.wcomponents.WContainer;
 import com.github.bordertech.wcomponents.WMessages;
 import com.github.bordertech.wcomponents.WPanel;
 import com.github.bordertech.wcomponents.WText;
-import com.sample.fileupload.services.ExceptionDetail;
-import com.sample.fileupload.services.ServiceException;
+import com.github.bordertech.wcomponents.util.SystemException;
 import com.sample.fileupload.tasks.TaskManager;
 import com.sample.fileupload.tasks.TaskManagerFactory;
+import java.util.UUID;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import javax.cache.Cache;
+import javax.cache.CacheManager;
+import javax.cache.Caching;
+import javax.cache.configuration.MutableConfiguration;
+import javax.cache.expiry.AccessedExpiryPolicy;
+import javax.cache.expiry.Duration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -39,10 +47,27 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class AbstractPollingPanel<T, R> extends WPanel {
 
+	private static final String CACHE_NAME = "wc-sample-polling-future";
+
+	/**
+	 * Status of the Panel and if the service has been called successfully.
+	 */
 	public enum PanelStatus {
+		/**
+		 * Service not called yet.
+		 */
 		NOT_STARTED,
+		/**
+		 * Service being called.
+		 */
 		PROCESSING,
+		/**
+		 * Service call had an error.
+		 */
 		ERROR,
+		/**
+		 * Service called successfully.
+		 */
 		COMPLETE
 	}
 
@@ -241,7 +266,7 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 	/**
 	 * @param panelStatus the panel status
 	 */
-	private void setPanelStatus(final PanelStatus panelStatus) {
+	protected void setPanelStatus(final PanelStatus panelStatus) {
 		getOrCreateComponentModel().panelStatus = panelStatus;
 	}
 
@@ -321,7 +346,7 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 		handleClearServiceCache();
 		root.reset();
 		setPanelStatus(PanelStatus.NOT_STARTED);
-		setFuture(null);
+		clearFuture();
 	}
 
 	/**
@@ -361,9 +386,9 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 	 *
 	 * @param recordId the id for the record
 	 * @return the response
-	 * @throws ServiceException a service exception occurred
+	 * @throws PollingServiceException a service exception occurred
 	 */
-	protected abstract T doServiceCall(final R recordId) throws ServiceException;
+	protected abstract T doServiceCall(final R recordId) throws PollingServiceException;
 
 	/**
 	 * Clear the service level cache if necessary.
@@ -448,39 +473,34 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 	 * @param exception the exception to setup messages
 	 */
 	protected void extractExceptionMessages(final String prefix, final WMessages messages, final Exception exception) {
-		if (exception instanceof ServiceException) {
-			ServiceException excp = (ServiceException) exception;
-			for (ExceptionDetail msg : excp.getErrorMessages()) {
-				messages.error(prefix + msg.getDesc());
-			}
-		} else {
-			messages.error(prefix + exception.getMessage());
-		}
+		messages.error(prefix + exception.getMessage());
 	}
 
 	/**
 	 * @return true if polling and is the current AJAX trigger.
 	 */
-	private boolean isPollingTarget() {
+	protected boolean isPollingTarget() {
 		return isPolling() && AjaxHelper.isCurrentAjaxTrigger(ajaxPolling);
 	}
 
 	/**
 	 * @return true if currently polling
 	 */
-	private boolean isPolling() {
+	protected boolean isPolling() {
 		return ajaxContainer.isVisible();
 	}
 
 	/**
 	 * Check the future holds the result.
 	 */
-	private void checkForResult() {
+	protected void checkForResult() {
 
 		// Get the Future for the service call
 		Future<ServiceResultHolder> future = getFuture();
 		if (future == null) {
-			// Maybe treat as invalid state
+			// Stop polling as future must have expired
+			handleResult(new PollingServiceException("Future has expired so service result not available"));
+			handleStopPolling();
 			return;
 		}
 
@@ -498,7 +518,7 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 			result = e;
 		}
 		// Clear future
-		setFuture(null);
+		clearFuture();
 		handleResult(result);
 		// Stop polling
 		handleStopPolling();
@@ -508,11 +528,11 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 	 * Handle the service call.
 	 *
 	 * @param recordId the record id
-	 * @throws ServiceException the service exception
+	 * @throws PollingServiceException the service exception
 	 */
-	private void handleAsyncServiceCall(final R recordId) throws ServiceException {
+	protected void handleAsyncServiceCall(final R recordId) throws PollingServiceException {
 
-		setFuture(null);
+		clearFuture();
 
 		final ServiceResultHolder result = new ServiceResultHolder();
 		Runnable task = new Runnable() {
@@ -522,33 +542,75 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 					T resp = doServiceCall(recordId);
 					result.setResult(resp);
 				} catch (Exception e) {
-					// Dont chain original exception (may not be cacheable)
-					ServiceException excp = new ServiceException(e.getMessage());
+					PollingServiceException excp = new PollingServiceException(e.getMessage(), e);
 					result.setResult(excp);
 				}
 			}
 		};
 		try {
 			Future future = TASK_MANAGER.submit(task, result);
-			// Save the future on the user context
+			// Save the future
 			setFuture(future);
 		} catch (Exception e) {
-			throw new ServiceException("Could not start thread to call service. " + e.getMessage());
+			throw new PollingServiceException("Could not start thread to call service. " + e.getMessage());
 		}
 	}
 
 	/**
 	 * @return the service call future object
 	 */
-	private Future<ServiceResultHolder> getFuture() {
-		return getComponentModel().future;
+	protected Future<ServiceResultHolder> getFuture() {
+		String id = getComponentModel().futureId;
+		if (id == null) {
+			return null;
+		}
+		return getCache().get(id);
 	}
 
 	/**
 	 * @param future the service future to save
 	 */
-	private void setFuture(final Future<ServiceResultHolder> future) {
-		getOrCreateComponentModel().future = future;
+	protected void setFuture(final Future<ServiceResultHolder> future) {
+		if (UIContextHolder.getCurrent() == null) {
+			throw new SystemException("A Future can only be set when there is a user context.");
+		}
+		String id = UUID.randomUUID().toString();
+		getCache().put(id, future);
+		getOrCreateComponentModel().futureId = id;
+	}
+
+	/**
+	 * Cancel and clear the future if there is one already running.
+	 */
+	protected void clearFuture() {
+		Future future = getFuture();
+		if (future != null) {
+			if (!future.isDone() && !future.isCancelled()) {
+				future.cancel(true);
+			}
+			String id = getComponentModel().futureId;
+			getCache().remove(id);
+		}
+	}
+
+	/**
+	 * Use a cache to hold a reference to the future so the user context can be serialized. Future Objects are not
+	 * serializable.
+	 *
+	 * @return the cache instance
+	 */
+	protected synchronized Cache<String, Future> getCache() {
+		Cache<String, Future> cache = Caching.getCache(CACHE_NAME, String.class, Future.class);
+		if (cache == null) {
+			final CacheManager mgr = Caching.getCachingProvider().getCacheManager();
+			MutableConfiguration<String, Future> config = new MutableConfiguration<>();
+			config.setTypes(String.class, Future.class);
+			config.setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, 5)));
+			// No need to serialize the result (Future is not serializable)
+			config.setStoreByValue(false);
+			cache = mgr.createCache(CACHE_NAME, config);
+		}
+		return cache;
 	}
 
 	/**
@@ -591,9 +653,9 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 		private PanelStatus panelStatus = PanelStatus.NOT_STARTED;
 
 		/**
-		 * Holds the future for the service call.
+		 * Holds the reference to the future for the service call.
 		 */
-		private Future<ServiceResultHolder> future;
+		private String futureId;
 	}
 
 	/**
@@ -615,6 +677,28 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 		 */
 		public void setResult(final Object result) {
 			this.result = result;
+		}
+
+	}
+
+	/**
+	 * Exception processing polling service.
+	 */
+	public static class PollingServiceException extends Exception {
+
+		/**
+		 * @param msg exception message
+		 */
+		public PollingServiceException(final String msg) {
+			super(msg);
+		}
+
+		/**
+		 * @param msg exception message
+		 * @param throwable original exception
+		 */
+		public PollingServiceException(final String msg, final Throwable throwable) {
+			super(msg, throwable);
 		}
 
 	}
