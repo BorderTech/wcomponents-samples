@@ -61,9 +61,10 @@ public class DemoApp extends WApplication {
 			if (isNewUpload()) {
 				int idx = getFiles().size() - 1;
 				FileWidgetUpload upload = getFiles().get(idx);
-				ValidatingPanel panel = new ValidatingPanel();
+				ValidatingServicePanel panel = new ValidatingServicePanel();
 				validatingContainer.add(panel);
 				panel.setRecordId(upload);
+				panel.setPollingText(" Validating file [" + upload.getFile().getFileName() + "].");
 				panel.doStartLoading();
 			}
 		}
@@ -88,7 +89,12 @@ public class DemoApp extends WApplication {
 		}
 	};
 
-	private final WPanel ajaxPanel = new WPanel(WPanel.Type.BOX);
+	private final WPanel ajaxPanel = new WPanel() {
+		@Override
+		public boolean isHidden() {
+			return validatingContainer.getChildCount() == 0;
+		}
+	};
 	private final WAjaxControl ajaxWidget = new WAjaxControl(widget, new AjaxTarget[]{imageHolder, ajaxPanel});
 
 	private final WContainer validatingContainer = new WContainer();
@@ -115,6 +121,7 @@ public class DemoApp extends WApplication {
 		WPanel split = new WPanel();
 		split.setLayout(new ColumnLayout(new int[]{50, 50}, 12, 0));
 		split.setHtmlClass(HtmlClassProperties.RESPOND);
+		split.setMargin(new Margin(12, 0, 12, 0));
 		content.add(split);
 
 		WContainer left = new WContainer();
@@ -129,6 +136,7 @@ public class DemoApp extends WApplication {
 
 		// Left Column
 		WFieldLayout layout = new WFieldLayout(WFieldLayout.LAYOUT_STACKED);
+		layout.setMargin(new Margin(0, 0, 6, 0));
 		left.add(layout);
 
 		widget.setMandatory(true);
@@ -197,15 +205,30 @@ public class DemoApp extends WApplication {
 		left.add(ajaxPanel);
 		ajaxPanel.add(validatingContainer);
 		ajaxPanel.add(ajaxWidget);
-//		ajaxPanel.add(ajaxPolling);
-//		ajaxPolling.setDelay(289);
 
 		validatingContainer.setNamingContext(true);
 		validatingContainer.setIdName("val");
 
+		WPanel buttonPanel = new WPanel(WPanel.Type.FEATURE);
+		buttonPanel.setMargin(new Margin(12, 0, 6, 0));
+		ColumnLayout.Alignment[] align = new ColumnLayout.Alignment[]{ColumnLayout.Alignment.LEFT, ColumnLayout.Alignment.RIGHT};
+		buttonPanel.setLayout(new ColumnLayout(new int[]{50, 50}, align, 12, 0));
+		buttonPanel.setHtmlClass(HtmlClassProperties.RESPOND);
+		content.add(buttonPanel);
+
+		// Reset Button
+		WButton resetButton = new WButton("Reset");
+		resetButton.setAction(new Action() {
+			@Override
+			public void execute(final ActionEvent event) {
+				DemoApp.this.reset();
+			}
+		});
+		buttonPanel.add(resetButton);
+
 		// Validation Button
 		WButton button = new WButton("Validate");
-		left.add(button);
+		buttonPanel.add(button);
 
 		button.setAction(new ValidatingAction(messages.getValidationErrors(), layout) {
 			@Override
@@ -216,22 +239,28 @@ public class DemoApp extends WApplication {
 
 	}
 
+	/**
+	 * Check if any validating panels need to be removed (ie file deleted from list).
+	 */
 	private void checkPanels() {
 		if (validatingContainer.getChildCount() == 0) {
 			return;
 		}
 		List<FileWidgetUpload> files = widget.getFiles();
 		for (int i = validatingContainer.getChildCount(); i > 0; i--) {
-			ValidatingPanel panel = (ValidatingPanel) validatingContainer.getChildAt(i - 1);
+			ValidatingServicePanel panel = (ValidatingServicePanel) validatingContainer.getChildAt(i - 1);
 			if (!files.contains(panel.getRecordId())) {
 				validatingContainer.remove(panel);
 			}
 		}
 	}
 
+	/**
+	 * @return true if all the files are valid
+	 */
 	private boolean checkAllValid() {
 		for (WComponent panel : validatingContainer.getChildren()) {
-			ValidatingPanel validating = (ValidatingPanel) panel;
+			ValidatingServicePanel validating = (ValidatingServicePanel) panel;
 			if (!validating.isValidFile()) {
 				return false;
 			}
@@ -239,33 +268,36 @@ public class DemoApp extends WApplication {
 		return true;
 	}
 
-	public static class ValidatingPanel extends AbstractPollingPanel<ValidatingResult, FileWidgetUpload> {
+	/**
+	 * Polling service that validates the file.
+	 */
+	public static class ValidatingServicePanel extends AbstractPollingPanel<ValidatingResult, FileWidgetUpload> {
 
-		private final WHeading heading = new WHeading(HeadingLevel.H2, "");
 		private final WMessages messages = new WMessages(true);
 
-		public ValidatingPanel() {
+		/**
+		 * Construct the panel.
+		 */
+		public ValidatingServicePanel() {
 			super(null, 267, true);
 
 			getContent().add(messages);
 			getStartButton().setVisible(false);
+			setMargin(new Margin(0, 0, 6, 0));
 		}
 
-		@Override
-		protected void setupLoadingMessage(final WContainer ajaxContainer) {
-			super.setupLoadingMessage(ajaxContainer);
-		}
-
-		@Override
-		protected void doInitContent(final Request request) {
-			String name = getRecordId().getFile().getFileName();
-			heading.setText(name);
-		}
-
+		/**
+		 * @return true if file is valid
+		 */
 		public boolean isValidFile() {
 			return getPanelStatus() == PanelStatus.COMPLETE && messages.getErrorMessages().isEmpty();
 		}
 
+		/**
+		 * Setup the messages for validating the file.
+		 *
+		 * @param response the service response
+		 */
 		@Override
 		protected void handleSuccessfulServiceResponse(final ValidatingResult response) {
 			FileWidgetUpload file = getRecordId();
@@ -273,7 +305,7 @@ public class DemoApp extends WApplication {
 				messages.info("File [" + file.getFile().getFileName() + "] is valid");
 			} else {
 				for (String msg : response.getMessages()) {
-					messages.info("File [" + file.getFile().getFileName() + "] is not valid");
+					messages.error("File [" + file.getFile().getFileName() + "] is not valid");
 					messages.error(msg);
 				}
 			}
@@ -282,10 +314,16 @@ public class DemoApp extends WApplication {
 		@Override
 		protected ValidatingResult doServiceCall(final FileWidgetUpload recordId) throws PollingServiceException {
 
+			// Pretend Service Calls
 			String fileName = recordId.getFile().getFileName();
 			ValidatingResult result = new ValidatingResult();
 
 			if (fileName.contains("bad")) {
+				try {
+					Thread.currentThread().sleep(5000);
+				} catch (Exception e) {
+
+				}
 				result.addMessage("Bad file name");
 			} else if (fileName.contains("long")) {
 				try {
@@ -294,7 +332,12 @@ public class DemoApp extends WApplication {
 
 				}
 			} else if (fileName.contains("error")) {
-				throw new PollingServiceException("Exception validting file");
+				try {
+					Thread.currentThread().sleep(3000);
+				} catch (Exception e) {
+
+				}
+				throw new PollingServiceException("Exception validating file");
 			}
 			return result;
 		}

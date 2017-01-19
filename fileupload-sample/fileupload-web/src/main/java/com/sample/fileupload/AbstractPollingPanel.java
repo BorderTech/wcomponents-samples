@@ -3,6 +3,7 @@ package com.sample.fileupload;
 import com.github.bordertech.wcomponents.Action;
 import com.github.bordertech.wcomponents.ActionEvent;
 import com.github.bordertech.wcomponents.AjaxHelper;
+import com.github.bordertech.wcomponents.Margin;
 import com.github.bordertech.wcomponents.Request;
 import com.github.bordertech.wcomponents.UIContextHolder;
 import com.github.bordertech.wcomponents.WAjaxControl;
@@ -10,6 +11,7 @@ import com.github.bordertech.wcomponents.WButton;
 import com.github.bordertech.wcomponents.WContainer;
 import com.github.bordertech.wcomponents.WMessages;
 import com.github.bordertech.wcomponents.WPanel;
+import com.github.bordertech.wcomponents.WProgressBar;
 import com.github.bordertech.wcomponents.WText;
 import com.github.bordertech.wcomponents.util.SystemException;
 import com.sample.fileupload.tasks.TaskManager;
@@ -137,12 +139,56 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 	/**
 	 * The container that holds the AJAX poller.
 	 */
-	private final WContainer ajaxContainer = new WContainer();
+	private final WContainer pollingContainer = new WContainer();
+
+	private final WText pollingText = new WText() {
+		@Override
+		public String getText() {
+			return getPollingText();
+		}
+	};
+
+	private final WProgressBar pollingProgressBar = new WProgressBar(100);
+
+	private final WText progressBarScript = new WText() {
+		@Override
+		protected void preparePaintComponent(final Request request) {
+			if (!isInitialised()) {
+				setText(buildProgressBarScript());
+				setInitialised(true);
+			}
+		}
+	};
+
+	/**
+	 * The container that holds the AJAX poller.
+	 */
+	private final WPanel ajaxPollingPanel = new WPanel() {
+		@Override
+		public boolean isHidden() {
+			return true;
+		}
+	};
 
 	/**
 	 * AJAX poller.
 	 */
-	private final WAjaxControl ajaxPolling = new WAjaxControl(null, this);
+	private final WAjaxControl ajaxPolling = new WAjaxControl(null, ajaxPollingPanel);
+
+	/**
+	 * AJAX control to reload whole panel.
+	 */
+	private final WAjaxControl ajaxReload = new WAjaxControl(null, this) {
+		@Override
+		protected void preparePaintComponent(final Request request) {
+			super.preparePaintComponent(request);
+			// Reloading
+			if (AjaxHelper.isCurrentAjaxTrigger(this)) {
+				// Stop polling
+				pollingContainer.setVisible(false);
+			}
+		}
+	};
 
 	/**
 	 * Construct polling panel.
@@ -184,12 +230,20 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 		// AJAX polling details
 		ajaxPolling.setDelay(delay);
 		ajaxPolling.setLoadOnce(true);
+		ajaxReload.setLoadOnce(true);
+		ajaxReload.setDelay(10);
+		progressBarScript.setEncodeText(false);
 
 		// AJAX Container
-		root.add(ajaxContainer);
-		ajaxContainer.add(ajaxPolling);
-		setupLoadingMessage(ajaxContainer);
+		root.add(pollingContainer);
+		pollingContainer.add(pollingText);
+		pollingContainer.add(pollingProgressBar);
+		pollingContainer.add(progressBarScript);
+		pollingContainer.add(ajaxPollingPanel);
+		ajaxPollingPanel.add(ajaxPolling);
+		ajaxPollingPanel.add(ajaxReload);
 
+		messages.setMargin(new Margin(0, 0, 3, 0));
 		root.add(messages);
 		root.add(retryButton);
 		root.add(content);
@@ -215,8 +269,9 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 
 		// Set default visibility
 		retryButton.setVisible(false);
-		ajaxContainer.setVisible(false);
+		pollingContainer.setVisible(false);
 		content.setVisible(false);
+		ajaxReload.setVisible(false);
 
 		// Context
 		if (context != null) {
@@ -225,7 +280,9 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 			// IDs
 			messages.setIdName("msgs");
 			retryButton.setIdName("btnRetry");
+			ajaxPollingPanel.setIdName("pollingPanel");
 			ajaxPolling.setIdName("ajaxPoll");
+			ajaxReload.setIdName("ajaxReload");
 			startButton.setIdName("btnStart");
 		}
 
@@ -247,6 +304,20 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 	 */
 	public WMessages getMessages() {
 		return messages;
+	}
+
+	/**
+	 * @param text the text displayed while polling
+	 */
+	public void setPollingText(final String text) {
+		getOrCreateComponentModel().pollingText = text;
+	}
+
+	/**
+	 * @return the text displayed while polling
+	 */
+	public String getPollingText() {
+		return getComponentModel().pollingText;
 	}
 
 	/**
@@ -362,13 +433,6 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 	}
 
 	/**
-	 * @param ajaxContainer the container that holds the AJAX logic while waiting for response.
-	 */
-	protected void setupLoadingMessage(final WContainer ajaxContainer) {
-		ajaxContainer.add(new WText("Loading..."));
-	}
-
-	/**
 	 * Called when initializing the content of the panel after a response from the service has been received.
 	 *
 	 * @param request the request being processed
@@ -419,14 +483,17 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 	protected void handleStartPolling() {
 		// Start AJAX polling
 		setPanelStatus(PanelStatus.PROCESSING);
-		ajaxContainer.setVisible(true);
+		pollingContainer.setVisible(true);
+		ajaxPolling.reset();
+		ajaxReload.reset();
 	}
 
 	/**
 	 * Stop polling.
 	 */
 	protected void handleStopPolling() {
-		ajaxContainer.setVisible(false);
+		ajaxPolling.setVisible(false);
+		ajaxReload.setVisible(true);
 	}
 
 	/**
@@ -487,7 +554,7 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 	 * @return true if currently polling
 	 */
 	protected boolean isPolling() {
-		return ajaxContainer.isVisible();
+		return pollingContainer.isVisible();
 	}
 
 	/**
@@ -614,6 +681,25 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 	}
 
 	/**
+	 * @return the script to step the progress bar
+	 */
+	protected String buildProgressBarScript() {
+		StringBuilder script = new StringBuilder();
+		script.append("<script type='text/javascript'>");
+		script.append("function startStepProgressBar() {");
+		script.append("  var elem = document.getElementById('").append(pollingProgressBar.getId()).append("');");
+		script.append("  window.setInterval(stepProgressBar, 250, elem);");
+		script.append("}");
+		script.append("function stepProgressBar(bar) {");
+		script.append("   if (bar.value > 99) { bar.value = 0; }");
+		script.append("   bar.value++;");
+		script.append("}");
+		script.append("window.setTimeout(startStepProgressBar, 1000);");
+		script.append("</script>");
+		return script.toString();
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -652,6 +738,10 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 		 */
 		private PanelStatus panelStatus = PanelStatus.NOT_STARTED;
 
+		/**
+		 * Polling text.
+		 */
+		private String pollingText = "Loading....";
 		/**
 		 * Holds the reference to the future for the service call.
 		 */

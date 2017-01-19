@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<name>fileupload-war</name>
+	<artifactId>fileupload-war</artifactId>
+
+	<parent>
+		<groupId>com.sample</groupId>
+		<artifactId>fileupload-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<packaging>war</packaging>
+
+	<properties>
+		<multiproject.basedir>${basedir}/../..</multiproject.basedir>
+	</properties>
+
+	<build>
+		<!-- Allows project to be run via mvn jetty:run from the web-war directory. -->
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.sample</groupId>
+			<artifactId>fileupload-web</artifactId>
+			<version>${project.version}</version>
+			<exclusions>
+				<!-- Exclude the LDE (ie jetty) to deploy to tomcat/webshpere etc.... -->
+				<exclusion>
+					<groupId>com.github.bordertech.wcomponents</groupId>
+					<artifactId>wcomponents-lde</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
+
+</project>
