@@ -1,4 +1,4 @@
-package my.demo;
+package com.sample.chart;
 
 import com.github.bordertech.wcomponents.ContentAccess;
 import com.github.bordertech.wcomponents.HeadingLevel;
@@ -21,7 +21,7 @@ import java.util.Arrays;
  *
  * @author Jonathan Austin
  */
-public class MyChart extends WApplication {
+public class DemoApp extends WApplication {
 
 	private final WContent jsonData = new WContent();
 
@@ -36,7 +36,7 @@ public class MyChart extends WApplication {
 	/**
 	 * Construct application.
 	 */
-	public MyChart() {
+	public DemoApp() {
 
 		// C3 CSS
 		addCssUrl("js/lib/c3-0.4.11.css");

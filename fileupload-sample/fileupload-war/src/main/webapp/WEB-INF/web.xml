@@ -4,12 +4,12 @@
 	<display-name>Fileupload Sample</display-name>
 	<listener>
 		<listener-class>
-			com.sample.fileupload.DemoContextListener
+			com.sample.fileupload.servlet.DemoContextListener
 		</listener-class>
 	</listener>
 	<servlet>
 		<servlet-name>DemoServlet</servlet-name>
-		<servlet-class>com.sample.fileupload.DemoServlet</servlet-class>
+		<servlet-class>com.sample.fileupload.servlet.DemoServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>DemoServlet</servlet-name>

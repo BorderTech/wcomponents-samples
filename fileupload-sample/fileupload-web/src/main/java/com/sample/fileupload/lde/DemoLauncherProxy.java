@@ -1,4 +1,4 @@
-package my.demo;
+package com.sample.fileupload.lde;
 
 import com.github.bordertech.wcomponents.lde.PlainLauncher;
 
