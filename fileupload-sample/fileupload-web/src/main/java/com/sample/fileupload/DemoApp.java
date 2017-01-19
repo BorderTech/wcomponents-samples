@@ -107,7 +107,7 @@ public class DemoApp extends WApplication {
 		// Header
 		final WPanel header = new WPanel(WPanel.Type.HEADER);
 		add(header);
-		header.add(new WHeading(HeadingLevel.H1, "Fileupload Sample"));
+		header.add(new WHeading(HeadingLevel.H1, "File upload sample"));
 
 		// Detail
 		WSection section = new WSection("Upload");
