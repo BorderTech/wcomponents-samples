@@ -7,7 +7,7 @@ import java.util.concurrent.Future;
 /**
  * Handle running tasks via {@link ExecutorService}.
  *
- * @author jonathan
+ * @author Jonathan Austin
  * @since 1.0.0
  */
 public class TaskManagerExecutorServiceImpl implements TaskManager {
@@ -26,8 +26,9 @@ public class TaskManagerExecutorServiceImpl implements TaskManager {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T> Future<T> submit(final Runnable task, final T result) {
-		return POOL.submit(task, result);
+	public <T> TaskFuture<T> submit(final Runnable task, final T result) {
+		Future<T> future = POOL.submit(task, result);
+		return new TaskFutureCacheImpl<>(future);
 	}
 
 }

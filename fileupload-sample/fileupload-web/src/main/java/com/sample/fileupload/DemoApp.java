@@ -344,10 +344,16 @@ public class DemoApp extends WApplication {
 
 	}
 
+	/**
+	 * Holds result of validation. No messages means it is valid.
+	 */
 	public static class ValidatingResult {
 
 		private List<String> messages;
 
+		/**
+		 * @param message add error message
+		 */
 		public void addMessage(final String message) {
 			if (messages == null) {
 				messages = new ArrayList<>();
@@ -355,6 +361,9 @@ public class DemoApp extends WApplication {
 			messages.add(message);
 		}
 
+		/**
+		 * @return all error messages
+		 */
 		public List<String> getMessages() {
 			if (messages == null) {
 				return Collections.EMPTY_LIST;
