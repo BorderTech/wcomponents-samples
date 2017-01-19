@@ -92,6 +92,7 @@
 
 	<modules>
 		<module>fileupload-web</module>
+		<module>fileupload-war</module>
 	</modules>
 
 </project>
