@@ -1,4 +1,4 @@
-package com.sample.fileupload;
+package com.sample.chart.lde;
 
 import com.github.bordertech.wcomponents.lde.PlainLauncher;
 

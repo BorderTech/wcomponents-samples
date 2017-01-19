@@ -1,8 +1,9 @@
-package my.demo;
+package com.sample.chart.servlet;
 
 import com.github.bordertech.wcomponents.WComponent;
 import com.github.bordertech.wcomponents.registry.UIRegistry;
 import com.github.bordertech.wcomponents.servlet.WServlet;
+import com.sample.chart.DemoApp;
 
 /**
  * Servlet to feed up the application.
@@ -17,7 +18,7 @@ public class DemoServlet extends WServlet {
 	 */
 	@Override
 	public WComponent getUI(final Object httpServletRequest) {
-		return UIRegistry.getInstance().getUI(MyChart.class.getName());
+		return UIRegistry.getInstance().getUI(DemoApp.class.getName());
 	}
 
 }

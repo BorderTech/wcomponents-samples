@@ -1,4 +1,4 @@
-package com.sample.fileupload;
+package com.sample.fileupload.servlet;
 
 import com.sample.fileupload.tasks.TaskManagerFactory;
 import javax.servlet.ServletContextEvent;
