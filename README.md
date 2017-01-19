@@ -3,9 +3,9 @@ Sample web applications to demonstrate WComponents and provide "starter" project
 
 ## Live Demo
 A live demo of the sample applications are available at the following links:
-* [Client app](http://wcomponents-bordertech.rhcloud.com/client/app)
-* [Charting](http://wcomponents-bordertech.rhcloud.com/chart/app)
-* [Fileupload](http://wcomponents-bordertech.rhcloud.com/fileupload/app)
+* [Client app](https://wcomponents-bordertech.rhcloud.com/client/app)
+* [Charting](https://wcomponents-bordertech.rhcloud.com/chart/app)
+* [Fileupload](https://wcomponents-bordertech.rhcloud.com/fileupload/app)
 
 ## Build and Run Sample
 If you wish to build the samples you will need [Apache Maven](https://maven.apache.org/) installed.
