@@ -5,7 +5,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 /**
- * ContextListener to shutdwon the task manager (release threads).
+ * ContextListener to shutdown the task manager (release threads).
  *
  * @author Jonathan Austin
  * @since 1.0.0

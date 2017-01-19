@@ -5,7 +5,6 @@ import com.github.bordertech.wcomponents.ActionEvent;
 import com.github.bordertech.wcomponents.AjaxHelper;
 import com.github.bordertech.wcomponents.Margin;
 import com.github.bordertech.wcomponents.Request;
-import com.github.bordertech.wcomponents.UIContextHolder;
 import com.github.bordertech.wcomponents.WAjaxControl;
 import com.github.bordertech.wcomponents.WButton;
 import com.github.bordertech.wcomponents.WContainer;
@@ -13,18 +12,9 @@ import com.github.bordertech.wcomponents.WMessages;
 import com.github.bordertech.wcomponents.WPanel;
 import com.github.bordertech.wcomponents.WProgressBar;
 import com.github.bordertech.wcomponents.WText;
-import com.github.bordertech.wcomponents.util.SystemException;
+import com.sample.fileupload.tasks.TaskFuture;
 import com.sample.fileupload.tasks.TaskManager;
 import com.sample.fileupload.tasks.TaskManagerFactory;
-import java.util.UUID;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import javax.cache.Cache;
-import javax.cache.CacheManager;
-import javax.cache.Caching;
-import javax.cache.configuration.MutableConfiguration;
-import javax.cache.expiry.AccessedExpiryPolicy;
-import javax.cache.expiry.Duration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -48,8 +38,6 @@ import org.apache.commons.logging.LogFactory;
  * @since 1.0.0
  */
 public abstract class AbstractPollingPanel<T, R> extends WPanel {
-
-	private static final String CACHE_NAME = "wc-sample-polling-future";
 
 	/**
 	 * Status of the Panel and if the service has been called successfully.
@@ -563,7 +551,7 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 	protected void checkForResult() {
 
 		// Get the Future for the service call
-		Future<ServiceResultHolder> future = getFuture();
+		TaskFuture<ServiceResultHolder> future = getFuture();
 		if (future == null) {
 			// Stop polling as future must have expired
 			handleResult(new PollingServiceException("Future has expired so service result not available"));
@@ -615,7 +603,7 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 			}
 		};
 		try {
-			Future future = TASK_MANAGER.submit(task, result);
+			TaskFuture future = TASK_MANAGER.submit(task, result);
 			// Save the future
 			setFuture(future);
 		} catch (Exception e) {
@@ -626,58 +614,28 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 	/**
 	 * @return the service call future object
 	 */
-	protected Future<ServiceResultHolder> getFuture() {
-		String id = getComponentModel().futureId;
-		if (id == null) {
-			return null;
-		}
-		return getCache().get(id);
+	protected TaskFuture<ServiceResultHolder> getFuture() {
+		return getComponentModel().future;
 	}
 
 	/**
 	 * @param future the service future to save
 	 */
-	protected void setFuture(final Future<ServiceResultHolder> future) {
-		if (UIContextHolder.getCurrent() == null) {
-			throw new SystemException("A Future can only be set when there is a user context.");
-		}
-		String id = UUID.randomUUID().toString();
-		getCache().put(id, future);
-		getOrCreateComponentModel().futureId = id;
+	protected void setFuture(final TaskFuture<ServiceResultHolder> future) {
+		getOrCreateComponentModel().future = future;
 	}
 
 	/**
 	 * Cancel and clear the future if there is one already running.
 	 */
 	protected void clearFuture() {
-		Future future = getFuture();
+		TaskFuture future = getFuture();
 		if (future != null) {
 			if (!future.isDone() && !future.isCancelled()) {
 				future.cancel(true);
 			}
-			String id = getComponentModel().futureId;
-			getCache().remove(id);
+			getOrCreateComponentModel().future = null;
 		}
-	}
-
-	/**
-	 * Use a cache to hold a reference to the future so the user context can be serialized. Future Objects are not
-	 * serializable.
-	 *
-	 * @return the cache instance
-	 */
-	protected synchronized Cache<String, Future> getCache() {
-		Cache<String, Future> cache = Caching.getCache(CACHE_NAME, String.class, Future.class);
-		if (cache == null) {
-			final CacheManager mgr = Caching.getCachingProvider().getCacheManager();
-			MutableConfiguration<String, Future> config = new MutableConfiguration<>();
-			config.setTypes(String.class, Future.class);
-			config.setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, 5)));
-			// No need to serialize the result (Future is not serializable)
-			config.setStoreByValue(false);
-			cache = mgr.createCache(CACHE_NAME, config);
-		}
-		return cache;
 	}
 
 	/**
@@ -742,10 +700,11 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 		 * Polling text.
 		 */
 		private String pollingText = "Loading....";
+
 		/**
 		 * Holds the reference to the future for the service call.
 		 */
-		private String futureId;
+		private TaskFuture<ServiceResultHolder> future;
 	}
 
 	/**

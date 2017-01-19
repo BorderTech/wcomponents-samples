@@ -5,7 +5,7 @@ import com.github.bordertech.wcomponents.util.Factory;
 /**
  * Return the TaskManager.
  *
- * @author jonathan
+ * @author Jonathan Austin
  * @since 1.0.0
  */
 public final class TaskManagerFactory {

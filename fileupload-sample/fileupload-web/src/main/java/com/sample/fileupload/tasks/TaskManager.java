@@ -1,11 +1,11 @@
 package com.sample.fileupload.tasks;
 
-import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 
 /**
+ * Task Manager interface.
  *
- * @author jonathan
+ * @author Jonathan Austin
  */
 public interface TaskManager {
 
@@ -35,6 +35,6 @@ public interface TaskManager {
 	 * @throws RejectedExecutionException if the task cannot be scheduled for execution
 	 * @throws NullPointerException if the task is null
 	 */
-	<T> Future<T> submit(Runnable task, T result);
+	<T> TaskFuture<T> submit(Runnable task, T result);
 
 }
