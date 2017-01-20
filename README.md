@@ -8,7 +8,7 @@ A live demo of the sample applications are available at the following links:
 * [File upload](https://wcomponents-bordertech.rhcloud.com/fileupload/app)
 
 ## Build and Run Sample
-If you wish to build the samples you will need [Apache Maven](https://maven.apache.org/) installed. Minimum requirements to build and run are Maven 3.2.2 and Java 7.
+If you wish to build the samples you will need [Apache Maven](https://maven.apache.org/) installed. Minimum requirements are `Maven 3.2.2` and `Java 7`.
 
 Follow these commands to fetch the sample source, build and run:
 
