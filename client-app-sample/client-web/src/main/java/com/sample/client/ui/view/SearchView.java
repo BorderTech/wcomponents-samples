@@ -161,6 +161,16 @@ public class SearchView extends WSection implements MessageContainer {
 		});
 		menu.add(item);
 
+		// Documents
+		item = new WMenuItem("Documents");
+		item.setAction(new Action() {
+			@Override
+			public void execute(final ActionEvent event) {
+				app.showDocuments();
+			}
+		});
+		menu.add(item);
+
 	}
 
 	/**
@@ -185,6 +195,8 @@ public class SearchView extends WSection implements MessageContainer {
 				}
 			}
 		});
+		viewClient.setImageUrl("icons/view.png");
+		viewClient.setToolTip("view");
 
 		// Update client
 		final WButton updateClient = new WButton("Update");
@@ -203,7 +215,8 @@ public class SearchView extends WSection implements MessageContainer {
 				}
 			}
 		});
-
+		updateClient.setImageUrl("icons/edit.png");
+		updateClient.setToolTip("update");
 		final WContainer actionsContainer = new WContainer();
 		actionsContainer.add(viewClient);
 		actionsContainer.add(updateClient);

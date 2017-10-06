@@ -17,6 +17,23 @@
 
 	<packaging>pom</packaging>
 
+	<profiles>
+		<profile>
+			<id>openshift</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<configuration>
+							<warName>fileupload</warName>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<properties>
 		<multiproject.basedir>${basedir}/..</multiproject.basedir>
 	</properties>

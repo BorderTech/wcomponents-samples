@@ -4,6 +4,7 @@ import com.sample.client.model.AddressDetail;
 import com.sample.client.model.ClientSummary;
 import com.sample.client.model.ClientType;
 import com.sample.client.model.CodeOption;
+import com.sample.client.model.DocumentDetail;
 import com.sample.client.model.IndividualDetail;
 import com.sample.client.model.OrganisationDetail;
 import com.sample.client.model.PassportDetail;
@@ -282,6 +283,35 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 			return BigDecimal.valueOf(0.7);
 		}
 		return BigDecimal.valueOf(1.6);
+	}
+
+	@Override
+	public List<DocumentDetail> retrieveClientDocuments(final String clientId) throws ServiceException, ClientNotFoundException {
+		// Build mock list of document details
+		List<DocumentDetail> docs = new ArrayList<>();
+		int idx = 0;
+		for (String name : new String[]{"Bohr", "Curie", "Einstein", "Feynman", "Maxwell", "Roentgen", "Schrodinger", "Young"}) {
+			docs.add(createImageDocument(idx++, name));
+		}
+		for (String name : new String[]{"document1", "document2"}) {
+			docs.add(createWordDocument(idx++, name));
+		}
+		for (String name : new String[]{"sample1", "sample2"}) {
+			docs.add(createPdfDocument(idx++, name));
+		}
+		return docs;
+	}
+
+	private DocumentDetail createImageDocument(final int idx, final String name) {
+		return new DocumentDetail("doc" + idx, name, "sample/images/" + name + ".jpg");
+	}
+
+	private DocumentDetail createPdfDocument(final int idx, final String name) {
+		return new DocumentDetail("doc" + idx, name, "sample/docs/" + name + ".pdf");
+	}
+
+	private DocumentDetail createWordDocument(final int idx, final String name) {
+		return new DocumentDetail("doc" + idx, name, "sample/docs/" + name + ".docx");
 	}
 
 }
