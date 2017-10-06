@@ -3,9 +3,9 @@ Sample web applications to demonstrate WComponents and provide "starter" project
 
 ## Live Demo
 A live demo of the sample applications are available at the following links:
-* [Client app](https://wcomponents-bordertech.rhcloud.com/client/app)
-* [Charting](https://wcomponents-bordertech.rhcloud.com/chart/app)
-* [File upload](https://wcomponents-bordertech.rhcloud.com/fileupload/app)
+* [Client app](https://wcomponents-samples-client.herokuapp.com/app)
+* [Charting](https://wcomponents-samples-chart.herokuapp.com/app)
+* [File upload](https://wcomponents-samples-fileupload.herokuapp.com/app)
 
 ## Build and Run Sample
 If you wish to build the samples you will need [Apache Maven](https://maven.apache.org/) installed. Minimum requirements are `Maven 3.2.2` and `Java 7`.
