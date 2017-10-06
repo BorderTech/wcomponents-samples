@@ -18,7 +18,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- QA Settings -->
 		<wc.qa.skip>true</wc.qa.skip>
-		<wcomponent.version>1.3.2</wcomponent.version>
+		<wcomponent.version>1.4.10</wcomponent.version>
 		<multiproject.basedir>${basedir}</multiproject.basedir>
 	</properties>
 
@@ -44,6 +44,22 @@
 				<skipOptionalTests>true</skipOptionalTests>
 			</properties>
 		</profile>
+
+		<profile>
+			<id>openshift</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<configuration>
+							<outputDirectory>target</outputDirectory>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
 	</profiles>
 
 	<dependencyManagement>
@@ -88,6 +104,13 @@
 
 		<pluginManagement>
 			<plugins>
+
+				<!-- WAR plugin. -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>3.1.0</version>
+				</plugin>
 
 				<!-- Compile the java source. -->
 				<plugin>

@@ -18,6 +18,22 @@
 	<version>1.0.0-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
+	<profiles>
+		<profile>
+			<id>openshift</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<configuration>
+							<warName>chart</warName>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<properties>
 		<multiproject.basedir>${basedir}/..</multiproject.basedir>

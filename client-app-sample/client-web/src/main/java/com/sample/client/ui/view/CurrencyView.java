@@ -59,7 +59,7 @@ public class CurrencyView extends WSection implements MessageContainer {
 	 * @param app the client app.
 	 */
 	public CurrencyView(final ClientApp app) {
-		super("Search");
+		super("Currency");
 
 		WPanel content = getContent();
 

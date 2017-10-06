@@ -22,6 +22,7 @@ import com.sample.client.ui.common.ClientWMessages;
 import com.sample.client.ui.common.Constants;
 import com.sample.client.ui.common.ViewMode;
 import com.sample.client.ui.view.CurrencyView;
+import com.sample.client.ui.view.DocumentView;
 import com.sample.client.ui.view.IndividualView;
 import com.sample.client.ui.view.OrganisationView;
 import com.sample.client.ui.view.SearchView;
@@ -48,6 +49,7 @@ public class ClientApp extends WApplication implements MessageContainer {
 	private final IndividualView vwIndividual;
 	private final OrganisationView vwOrganisation;
 	private final CurrencyView vwCurrency;
+	private final DocumentView vwDocuments;
 
 	/**
 	 * Creates a new Sample App.
@@ -78,10 +80,12 @@ public class ClientApp extends WApplication implements MessageContainer {
 		vwIndividual = new IndividualView(this);
 		vwOrganisation = new OrganisationView(this);
 		vwCurrency = new CurrencyView(this);
+		vwDocuments = new DocumentView(this);
 		mgr.add(vwSearch);
 		mgr.add(vwIndividual);
 		mgr.add(vwOrganisation);
 		mgr.add(vwCurrency);
+		mgr.add(vwDocuments);
 
 		// Footer
 		final WPanel footer = new WPanel(WPanel.Type.FOOTER);
@@ -105,6 +109,11 @@ public class ClientApp extends WApplication implements MessageContainer {
 	public void showCurrency() {
 		vwCurrency.reset();
 		mgr.makeVisible(vwCurrency);
+	}
+
+	public void showDocuments() {
+		vwDocuments.reset();
+		mgr.makeVisible(vwDocuments);
 	}
 
 	public void showSearch() {

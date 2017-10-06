@@ -2,6 +2,7 @@ package com.sample.client.services;
 
 import com.sample.client.model.ClientSummary;
 import com.sample.client.model.CodeOption;
+import com.sample.client.model.DocumentDetail;
 import com.sample.client.model.IndividualDetail;
 import com.sample.client.model.OrganisationDetail;
 import java.math.BigDecimal;
@@ -86,5 +87,14 @@ public interface ClientServicesHelper {
 	 * @return the conversion rate
 	 */
 	BigDecimal retrieveConversionRate(final String fromCurrency, final String toCurrency);
+
+	/**
+	 *
+	 * @param clientId the client id to retrieve documents for
+	 * @return the client documents
+	 * @throws ServiceException a service exception
+	 * @throws ClientNotFoundException client not found
+	 */
+	List<DocumentDetail> retrieveClientDocuments(final String clientId) throws ServiceException, ClientNotFoundException;
 
 }
