@@ -1,6 +1,7 @@
 package com.sample.client.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -13,14 +14,16 @@ public class DocumentDetail implements Serializable {
 
 	private String documentId;
 	private String description;
+	private Date submitDate;
 	private String resourcePath;
 
 	public DocumentDetail() {
 	}
 
-	public DocumentDetail(final String documentId, final String description, final String resourcePath) {
+	public DocumentDetail(final String documentId, final String description, final Date submitDate, final String resourcePath) {
 		this.documentId = documentId;
 		this.description = description;
+		this.submitDate = submitDate;
 		this.resourcePath = resourcePath;
 	}
 
@@ -38,6 +41,14 @@ public class DocumentDetail implements Serializable {
 
 	public void setDescription(final String description) {
 		this.description = description;
+	}
+
+	public Date getSubmitDate() {
+		return submitDate;
+	}
+
+	public void setSubmitDate(final Date submitDate) {
+		this.submitDate = submitDate;
 	}
 
 	public String getResourcePath() {

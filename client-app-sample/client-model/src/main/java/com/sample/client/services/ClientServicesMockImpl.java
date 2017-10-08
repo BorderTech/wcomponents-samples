@@ -303,15 +303,24 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 	}
 
 	private DocumentDetail createImageDocument(final int idx, final String name) {
-		return new DocumentDetail("doc" + idx, name, "sample/images/" + name + ".jpg");
+		return new DocumentDetail("doc" + idx, name, createDate(idx), "sample/images/" + name + ".jpg");
 	}
 
 	private DocumentDetail createPdfDocument(final int idx, final String name) {
-		return new DocumentDetail("doc" + idx, name, "sample/docs/" + name + ".pdf");
+		return new DocumentDetail("doc" + idx, name, createDate(idx), "sample/docs/" + name + ".pdf");
 	}
 
 	private DocumentDetail createWordDocument(final int idx, final String name) {
-		return new DocumentDetail("doc" + idx, name, "sample/docs/" + name + ".docx");
+		return new DocumentDetail("doc" + idx, name, createDate(idx), "sample/docs/" + name + ".docx");
+	}
+
+	private Date createDate(final int idx) {
+		int yr = 2010 - (idx % 4);
+		int mth = 12 - (idx % 3);
+		int day = 28 - (idx % 7);
+		Calendar dt = Calendar.getInstance();
+		dt.set(yr, mth, day);
+		return dt.getTime();
 	}
 
 }
