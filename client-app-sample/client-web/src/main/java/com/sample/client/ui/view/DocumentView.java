@@ -7,6 +7,7 @@ import com.github.bordertech.wcomponents.RenderContext;
 import com.github.bordertech.wcomponents.Request;
 import com.github.bordertech.wcomponents.SimpleBeanBoundTableModel;
 import com.github.bordertech.wcomponents.WButton;
+import com.github.bordertech.wcomponents.WDateField;
 import com.github.bordertech.wcomponents.WLink;
 import com.github.bordertech.wcomponents.WMenu;
 import com.github.bordertech.wcomponents.WMenuItem;
@@ -112,6 +113,7 @@ public class DocumentView extends WSection implements MessageContainer {
 		table.setMargin(Constants.SOUTH_MARGIN_LARGE);
 		table.addColumn(new WTableColumn("ID", new WText()));
 		table.addColumn(new WTableColumn("Description", new WText()));
+		table.addColumn(new WTableColumn("Submitted", new WDateField()));
 		table.addColumn(new WTableColumn("Link", new DocLink()));
 		table.setStripingType(WTable.StripingType.ROWS);
 		table.setNoDataMessage("No documents found.");
@@ -119,10 +121,10 @@ public class DocumentView extends WSection implements MessageContainer {
 		table.setSelectMode(WTable.SelectMode.MULTIPLE);
 		table.setSortMode(WTable.SortMode.DYNAMIC);
 
-		SimpleBeanBoundTableModel model = new SimpleBeanBoundTableModel(new String[]{"documentId", "description", "."});
+		SimpleBeanBoundTableModel model = new SimpleBeanBoundTableModel(new String[]{"documentId", "description", "submitDate", "."});
 		model.setSelectable(true);
-		model.setComparator(0, SimpleBeanBoundTableModel.COMPARABLE_COMPARATOR);
 		model.setComparator(1, SimpleBeanBoundTableModel.COMPARABLE_COMPARATOR);
+		model.setComparator(2, SimpleBeanBoundTableModel.COMPARABLE_COMPARATOR);
 		table.setTableModel(model);
 
 		// Select Documents
