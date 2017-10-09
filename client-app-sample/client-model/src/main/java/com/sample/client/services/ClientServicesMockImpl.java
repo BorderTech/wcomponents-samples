@@ -303,15 +303,15 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 	}
 
 	private DocumentDetail createImageDocument(final int idx, final String name) {
-		return new DocumentDetail("doc" + idx, name, createDate(idx), "sample/images/" + name + ".jpg");
+		return new DocumentDetail("doc" + idx, name, createDate(idx), "/sample/images/" + name + ".jpg");
 	}
 
 	private DocumentDetail createPdfDocument(final int idx, final String name) {
-		return new DocumentDetail("doc" + idx, name, createDate(idx), "sample/docs/" + name + ".pdf");
+		return new DocumentDetail("doc" + idx, name, createDate(idx), "/sample/docs/" + name + ".pdf");
 	}
 
 	private DocumentDetail createWordDocument(final int idx, final String name) {
-		return new DocumentDetail("doc" + idx, name, createDate(idx), "sample/docs/" + name + ".docx");
+		return new DocumentDetail("doc" + idx, name, createDate(idx), "/sample/docs/" + name + ".docx");
 	}
 
 	private Date createDate(final int idx) {
