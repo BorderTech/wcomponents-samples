@@ -2,11 +2,14 @@ package com.sample.client.ui.view;
 
 import com.github.bordertech.wcomponents.Action;
 import com.github.bordertech.wcomponents.ActionEvent;
+import com.github.bordertech.wcomponents.InternalResource;
 import com.github.bordertech.wcomponents.MessageContainer;
 import com.github.bordertech.wcomponents.RenderContext;
 import com.github.bordertech.wcomponents.Request;
 import com.github.bordertech.wcomponents.SimpleBeanBoundTableModel;
 import com.github.bordertech.wcomponents.WButton;
+import com.github.bordertech.wcomponents.WContainer;
+import com.github.bordertech.wcomponents.WContent;
 import com.github.bordertech.wcomponents.WDateField;
 import com.github.bordertech.wcomponents.WLink;
 import com.github.bordertech.wcomponents.WMenu;
@@ -151,9 +154,14 @@ public class DocumentView extends WSection implements MessageContainer {
 	public void doHandleView() {
 		ajaxPanel.reset();
 		for (DocumentDetail selected : (Set<DocumentDetail>) table.getSelectedRows()) {
-			WPopup popup = new WPopup(selected.getResourcePath());
+			// Content
+			WContent content = new WContent();
+			content.setContentAccess(new InternalResource(selected.getResourcePath(), selected.getDescription()));
+			// Popup link to content
+			WPopup popup = new WPopup(content.getUrl());
 			popup.setTargetWindow(selected.getDocumentId() + "-" + selected.getDescription());
 			popup.setVisible(true);
+			ajaxPanel.add(content);
 			ajaxPanel.add(popup);
 		}
 	}
@@ -180,16 +188,27 @@ public class DocumentView extends WSection implements MessageContainer {
 		}
 	}
 
-	public static class DocLink extends WLink {
+	public static class DocLink extends WContainer {
+
+		private final WContent content = new WContent();
+		private final WLink link = new WLink();
+
+		public DocLink() {
+			add(content);
+			add(link);
+		}
 
 		@Override
 		protected void preparePaintComponent(final Request request) {
 			super.preparePaintComponent(request);
 			if (!isInitialised()) {
 				DocumentDetail bean = (DocumentDetail) getBean();
-				setText(bean.getResourcePath());
-				setUrl(bean.getResourcePath());
-				setTargetWindowName(bean.getDocumentId() + "-" + bean.getDescription());
+				// Content
+				content.setContentAccess(new InternalResource(bean.getResourcePath(), bean.getDescription()));
+				// Link to content
+				link.setText(bean.getResourcePath());
+				link.setTargetWindowName(bean.getDocumentId() + "-" + bean.getDescription());
+				link.setUrl(content.getUrl());
 				setInitialised(true);
 			}
 		}

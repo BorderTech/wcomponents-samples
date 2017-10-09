@@ -18,7 +18,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- QA Settings -->
 		<wc.qa.skip>true</wc.qa.skip>
-		<wcomponent.version>1.4.10</wcomponent.version>
+		<wcomponent.version>1.4.12</wcomponent.version>
 		<multiproject.basedir>${basedir}</multiproject.basedir>
 	</properties>
 
