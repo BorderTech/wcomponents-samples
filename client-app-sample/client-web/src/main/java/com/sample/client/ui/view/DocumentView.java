@@ -11,6 +11,7 @@ import com.github.bordertech.wcomponents.WButton;
 import com.github.bordertech.wcomponents.WContainer;
 import com.github.bordertech.wcomponents.WContent;
 import com.github.bordertech.wcomponents.WDateField;
+import com.github.bordertech.wcomponents.WImage;
 import com.github.bordertech.wcomponents.WLink;
 import com.github.bordertech.wcomponents.WMenu;
 import com.github.bordertech.wcomponents.WMenuItem;
@@ -18,9 +19,11 @@ import com.github.bordertech.wcomponents.WMessages;
 import com.github.bordertech.wcomponents.WPanel;
 import com.github.bordertech.wcomponents.WPopup;
 import com.github.bordertech.wcomponents.WSection;
+import com.github.bordertech.wcomponents.WTabSet;
 import com.github.bordertech.wcomponents.WTable;
 import com.github.bordertech.wcomponents.WTableColumn;
 import com.github.bordertech.wcomponents.WText;
+import com.github.bordertech.wcomponents.WebUtilities;
 import com.sample.client.model.DocumentDetail;
 import com.sample.client.services.ClientServicesHelper;
 import com.sample.client.ui.application.ClientApp;
@@ -49,7 +52,7 @@ public class DocumentView extends WSection implements MessageContainer {
 	private final WPanel ajaxPanel = new WPanel() {
 		@Override
 		protected void afterPaint(final RenderContext renderContext) {
-			reset();
+//			reset();
 		}
 	};
 
@@ -131,11 +134,22 @@ public class DocumentView extends WSection implements MessageContainer {
 		table.setTableModel(model);
 
 		// Select Documents
-		WButton selButton = new WButton("View Selected Documents");
+		WButton selButton = new WButton("Launch selected documents");
 		selButton.setAction(new Action() {
 			@Override
 			public void execute(final ActionEvent event) {
 				doHandleView();
+			}
+		});
+		table.addAction(selButton);
+		table.addActionConstraint(selButton, new WTable.ActionConstraint(1, 0, true, "Please select at least one document to view."));
+
+		// Select Documents
+		selButton = new WButton("View selected on page");
+		selButton.setAction(new Action() {
+			@Override
+			public void execute(final ActionEvent event) {
+				doHandleOnPage();
 			}
 		});
 		table.addAction(selButton);
@@ -163,6 +177,49 @@ public class DocumentView extends WSection implements MessageContainer {
 			popup.setVisible(true);
 			ajaxPanel.add(content);
 			ajaxPanel.add(popup);
+		}
+	}
+
+	public void doHandleOnPage() {
+		ajaxPanel.reset();
+		WTabSet tabSet = new WTabSet();
+		ajaxPanel.add(tabSet);
+		for (DocumentDetail selected : (Set<DocumentDetail>) table.getSelectedRows()) {
+			WPanel panel = new WPanel();
+			int nameIdx = selected.getResourcePath().lastIndexOf("/");
+			String tabName = nameIdx == -1 ? selected.getResourcePath() : selected.getResourcePath().substring(nameIdx + 1);
+			tabSet.addTab(panel, tabName, tabSet.getTotalTabs() < 6 ? WTabSet.TabMode.EAGER : WTabSet.TabMode.LAZY);
+
+			// Document Content
+			WContent content = new WContent();
+			content.setContentAccess(new InternalResource(selected.getResourcePath(), selected.getDescription()));
+			panel.add(content);
+
+			String mimeType = selected.getResourcePath();
+
+			if (mimeType.endsWith("jpg")) {
+				// Image
+				WImage image = new WImage();
+				image.setImageUrl(content.getUrl());
+				panel.add(image);
+			} else if (mimeType.endsWith("docx")) {
+				// Link to content
+				WLink link = new WLink(selected.getResourcePath(), content.getUrl());
+				link.setTargetWindowName(selected.getDocumentId() + "-" + selected.getDescription());
+				link.setUrl(content.getUrl());
+				panel.add(link);
+			} else {
+				// IFrame
+				StringBuilder html = new StringBuilder();
+				html.append("<iframe src=\"");
+				html.append(WebUtilities.encodeUrl(content.getUrl()));
+				html.append("\"");
+				html.append(" style=\"overflow:scroll\" ");
+				html.append("></iframe>");
+				WText txt = new WText(html.toString());
+				txt.setEncodeText(false);
+				panel.add(txt);
+			}
 		}
 	}
 
