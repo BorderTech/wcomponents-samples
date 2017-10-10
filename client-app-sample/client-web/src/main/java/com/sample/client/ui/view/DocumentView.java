@@ -214,7 +214,7 @@ public class DocumentView extends WSection implements MessageContainer {
 				html.append("<iframe src=\"");
 				html.append(WebUtilities.encodeUrl(content.getUrl()));
 				html.append("\"");
-				html.append(" style=\"overflow:scroll\" ");
+				html.append(" style=\"width:100%; height: 50em\" ");
 				html.append("></iframe>");
 				WText txt = new WText(html.toString());
 				txt.setEncodeText(false);
