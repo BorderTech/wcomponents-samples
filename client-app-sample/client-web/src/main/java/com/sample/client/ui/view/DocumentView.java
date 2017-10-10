@@ -33,6 +33,7 @@ import com.sample.client.ui.application.ClientApp;
 import com.sample.client.ui.common.ClientWMessages;
 import com.sample.client.ui.common.Constants;
 import com.sample.client.ui.util.ClientServicesHelperFactory;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -132,6 +133,7 @@ public class DocumentView extends WSection implements MessageContainer {
 
 		SimpleBeanBoundTableModel model = new SimpleBeanBoundTableModel(new String[]{"documentId", "description", "submitDate", "."});
 		model.setSelectable(true);
+		model.setComparator(0, SimpleBeanBoundTableModel.COMPARABLE_COMPARATOR);
 		model.setComparator(1, SimpleBeanBoundTableModel.COMPARABLE_COMPARATOR);
 		model.setComparator(2, SimpleBeanBoundTableModel.COMPARABLE_COMPARATOR);
 		table.setTableModel(model);
@@ -170,7 +172,7 @@ public class DocumentView extends WSection implements MessageContainer {
 
 	public void doHandleView() {
 		ajaxPanel.reset();
-		for (DocumentDetail selected : (Set<DocumentDetail>) table.getSelectedRows()) {
+		for (DocumentDetail selected : getOrderedDocuments()) {
 			// Content
 			WContent content = new WContent();
 			content.setContentAccess(new InternalResource(selected.getResourcePath(), selected.getDescription()));
@@ -187,7 +189,7 @@ public class DocumentView extends WSection implements MessageContainer {
 		ajaxPanel.reset();
 		WTabSet tabSet = new WTabSet();
 		ajaxPanel.add(tabSet);
-		for (DocumentDetail selected : (Set<DocumentDetail>) table.getSelectedRows()) {
+		for (DocumentDetail selected : getOrderedDocuments()) {
 			WPanel panel = new WPanel();
 			int nameIdx = selected.getResourcePath().lastIndexOf("/");
 			String tabName = nameIdx == -1 ? selected.getResourcePath() : selected.getResourcePath().substring(nameIdx + 1);
@@ -245,11 +247,43 @@ public class DocumentView extends WSection implements MessageContainer {
 			try {
 				List<DocumentDetail> docs = CLIENT_SERVICES.retrieveClientDocuments("dummyId");
 				table.setBean(docs);
+				if (docs != null && !docs.isEmpty()) {
+					table.sort(0, true);
+				}
 			} catch (Exception e) {
 				messages.error("Could not load documents. " + e.getMessage());
 			}
 			setInitialised(true);
 		}
+	}
+
+	private List<DocumentDetail> getOrderedDocuments() {
+
+		// Get all the documents
+		List<DocumentDetail> docs = (List<DocumentDetail>) table.getBean();
+
+		// Put the documents in the sort order (if required)
+		if (table.isSorted()) {
+			int[] sortIdx = table.getTableModel().sort(table.getSortColumnIndex(), table.isSortAscending());
+			List<DocumentDetail> sorted = new ArrayList<>(docs.size());
+			for (int idx : sortIdx) {
+				sorted.add(docs.get(idx));
+			}
+			docs = sorted;
+		}
+
+		// Build a list of the selected docs in the sort order
+		List<DocumentDetail> sorted = new ArrayList<>();
+		Set<DocumentDetail> selected = (Set<DocumentDetail>) table.getSelectedRows();
+		for (DocumentDetail doc : docs) {
+			if (selected.contains(doc)) {
+				sorted.add(doc);
+				if (selected.size() == sorted.size()) {
+					break;
+				}
+			}
+		}
+		return sorted;
 	}
 
 	public static class DocLink extends WContainer {

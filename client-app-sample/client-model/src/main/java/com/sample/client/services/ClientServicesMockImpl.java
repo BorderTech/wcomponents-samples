@@ -10,6 +10,7 @@ import com.sample.client.model.OrganisationDetail;
 import com.sample.client.model.PassportDetail;
 import com.sample.client.model.StateType;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -290,7 +291,7 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 		// Build mock list of document details
 		List<DocumentDetail> docs = new ArrayList<>();
 		int idx = 0;
-		for (String name : new String[]{"Bohr", "Curie", "Einstein", "Feynman", "Maxwell", "Roentgen", "Schrodinger", "Young"}) {
+		for (String name : new String[]{"Einstein", "Bohr", "Maxwell", "Curie", "Schrodinger", "Feynman", "Young", "Roentgen"}) {
 			docs.add(createImageDocument(idx++, name));
 		}
 		for (String name : new String[]{"document1", "document2"}) {
@@ -303,15 +304,19 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 	}
 
 	private DocumentDetail createImageDocument(final int idx, final String name) {
-		return new DocumentDetail("doc" + idx, name, createDate(idx), "/sample/images/" + name + ".jpg");
+		return new DocumentDetail(createId(idx), name, createDate(idx), "/sample/images/" + name + ".jpg");
 	}
 
 	private DocumentDetail createPdfDocument(final int idx, final String name) {
-		return new DocumentDetail("doc" + idx, name, createDate(idx), "/sample/docs/" + name + ".pdf");
+		return new DocumentDetail(createId(idx), name, createDate(idx), "/sample/docs/" + name + ".pdf");
 	}
 
 	private DocumentDetail createWordDocument(final int idx, final String name) {
-		return new DocumentDetail("doc" + idx, name, createDate(idx), "/sample/docs/" + name + ".docx");
+		return new DocumentDetail(createId(idx), name, createDate(idx), "/sample/docs/" + name + ".docx");
+	}
+
+	private String createId(final int idx) {
+		return "doc-" + new DecimalFormat("000").format(idx);
 	}
 
 	private Date createDate(final int idx) {
