@@ -2,6 +2,7 @@ package com.sample.client.ui.view;
 
 import com.github.bordertech.wcomponents.Action;
 import com.github.bordertech.wcomponents.ActionEvent;
+import com.github.bordertech.wcomponents.HeadingLevel;
 import com.github.bordertech.wcomponents.InternalResource;
 import com.github.bordertech.wcomponents.MessageContainer;
 import com.github.bordertech.wcomponents.RenderContext;
@@ -11,6 +12,8 @@ import com.github.bordertech.wcomponents.WButton;
 import com.github.bordertech.wcomponents.WContainer;
 import com.github.bordertech.wcomponents.WContent;
 import com.github.bordertech.wcomponents.WDateField;
+import com.github.bordertech.wcomponents.WFigure;
+import com.github.bordertech.wcomponents.WHeading;
 import com.github.bordertech.wcomponents.WImage;
 import com.github.bordertech.wcomponents.WLink;
 import com.github.bordertech.wcomponents.WMenu;
@@ -197,19 +200,23 @@ public class DocumentView extends WSection implements MessageContainer {
 
 			String mimeType = selected.getResourcePath();
 
+			String title = selected.getDocumentId() + "-" + selected.getDescription();
+
 			if (mimeType.endsWith("jpg")) {
 				// Image
 				WImage image = new WImage();
 				image.setImageUrl(content.getUrl());
-				panel.add(image);
+				WFigure figure = new WFigure(image, title);
+				panel.add(figure);
 			} else if (mimeType.endsWith("docx")) {
 				// Link to content
 				WLink link = new WLink(selected.getResourcePath(), content.getUrl());
-				link.setTargetWindowName(selected.getDocumentId() + "-" + selected.getDescription());
+				link.setTargetWindowName(title);
 				link.setUrl(content.getUrl());
 				panel.add(link);
 			} else {
 				// IFrame
+				panel.add(new WHeading(HeadingLevel.H2, title));
 				StringBuilder html = new StringBuilder();
 				html.append("<iframe src=\"");
 				html.append(WebUtilities.encodeUrl(content.getUrl()));
