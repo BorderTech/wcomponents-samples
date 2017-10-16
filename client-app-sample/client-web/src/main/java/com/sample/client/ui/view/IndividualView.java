@@ -18,7 +18,7 @@ import com.sample.client.model.CodeOption;
 import com.sample.client.model.IndividualDetail;
 import com.sample.client.model.PassportDetail;
 import com.sample.client.services.ClientServicesHelper;
-import com.sample.client.services.ServiceException;
+import com.sample.client.services.exception.ServiceException;
 import com.sample.client.ui.application.ClientApp;
 import com.sample.client.ui.common.AddressPanel;
 import com.sample.client.ui.common.Constants;

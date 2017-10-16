@@ -98,11 +98,21 @@ public class DemoApp extends WApplication {
 	private final WAjaxControl ajaxWidget = new WAjaxControl(widget, new AjaxTarget[]{imageHolder, ajaxPanel});
 
 	private final WContainer validatingContainer = new WContainer();
+	private final WButton validateButton = new WButton("Validate");
+
+	private WText configOverride = new WText("<script type=\"text/javascript\">"
+			+ "require([\"wc/config\"], function(wcconfig) {\n"
+			+ "          wcconfig.set({ overwrite: true, format:\"jpeg\" }, \"wc/ui/multiFileUploader\");\n"
+			+ "});\n"
+			+ "</script>\n");
 
 	/**
 	 * Construct.
 	 */
 	public DemoApp() {
+
+		configOverride.setEncodeText(false);
+		add(configOverride);
 
 		// Header
 		final WPanel header = new WPanel(WPanel.Type.HEADER);
@@ -198,6 +208,7 @@ public class DemoApp extends WApplication {
 					}
 				}
 				checkPanels();
+				validateButton.setDisabled(widget.getFiles().isEmpty());
 			}
 		});
 
@@ -227,15 +238,16 @@ public class DemoApp extends WApplication {
 		buttonPanel.add(resetButton);
 
 		// Validation Button
-		WButton button = new WButton("Validate");
-		buttonPanel.add(button);
-
-		button.setAction(new ValidatingAction(messages.getValidationErrors(), layout) {
+		buttonPanel.add(validateButton);
+		validateButton.setDisabled(true);
+		validateButton.setAction(new ValidatingAction(messages.getValidationErrors(), layout) {
 			@Override
 			public void executeOnValid(final ActionEvent event) {
 				messages.success("OK.");
 			}
 		});
+
+		ajaxWidget.addTarget(validateButton);
 
 	}
 

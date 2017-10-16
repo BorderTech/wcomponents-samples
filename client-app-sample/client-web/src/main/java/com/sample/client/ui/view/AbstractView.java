@@ -15,7 +15,7 @@ import com.github.bordertech.wcomponents.WebUtilities;
 import com.github.bordertech.wcomponents.layout.ColumnLayout;
 import com.github.bordertech.wcomponents.validation.ValidatingAction;
 import com.sample.client.model.ClientSummary;
-import com.sample.client.services.ServiceException;
+import com.sample.client.services.exception.ServiceException;
 import com.sample.client.ui.application.ClientApp;
 import com.sample.client.ui.common.ClientWMessages;
 import com.sample.client.ui.common.Constants;

@@ -1,7 +1,11 @@
 package com.sample.client.services;
 
+import com.sample.client.services.exception.ServiceException;
+import com.sample.client.services.exception.DocumentNotFoundException;
+import com.sample.client.services.exception.ClientNotFoundException;
 import com.sample.client.model.ClientSummary;
 import com.sample.client.model.CodeOption;
+import com.sample.client.model.DocumentContent;
 import com.sample.client.model.DocumentDetail;
 import com.sample.client.model.IndividualDetail;
 import com.sample.client.model.OrganisationDetail;
@@ -85,8 +89,9 @@ public interface ClientServicesHelper {
 	 * @param fromCurrency from currency code
 	 * @param toCurrency to currency code
 	 * @return the conversion rate
+	 * @throws ServiceException a service exception
 	 */
-	BigDecimal retrieveConversionRate(final String fromCurrency, final String toCurrency);
+	BigDecimal retrieveConversionRate(final String fromCurrency, final String toCurrency) throws ServiceException;
 
 	/**
 	 *
@@ -96,5 +101,13 @@ public interface ClientServicesHelper {
 	 * @throws ClientNotFoundException client not found
 	 */
 	List<DocumentDetail> retrieveClientDocuments(final String clientId) throws ServiceException, ClientNotFoundException;
+
+	/**
+	 * @param documentId the document id
+	 * @return the document content
+	 * @throws ServiceException a service exception
+	 * @throws DocumentNotFoundException document not found exception
+	 */
+	DocumentContent retrieveDocument(final String documentId) throws ServiceException, DocumentNotFoundException;
 
 }
