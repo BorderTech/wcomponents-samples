@@ -10,7 +10,7 @@ import com.sample.client.model.ClientSummary;
 import com.sample.client.model.ClientType;
 import com.sample.client.model.OrganisationDetail;
 import com.sample.client.services.ClientServicesHelper;
-import com.sample.client.services.ServiceException;
+import com.sample.client.services.exception.ServiceException;
 import com.sample.client.ui.application.ClientApp;
 import com.sample.client.ui.common.AddressPanel;
 import com.sample.client.ui.util.ClientServicesHelperFactory;

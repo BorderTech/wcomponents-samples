@@ -4,22 +4,30 @@ import com.sample.client.model.AddressDetail;
 import com.sample.client.model.ClientSummary;
 import com.sample.client.model.ClientType;
 import com.sample.client.model.CodeOption;
+import com.sample.client.model.DocumentContent;
 import com.sample.client.model.DocumentDetail;
 import com.sample.client.model.IndividualDetail;
 import com.sample.client.model.OrganisationDetail;
 import com.sample.client.model.PassportDetail;
 import com.sample.client.model.StateType;
+import com.sample.client.services.exception.ClientNotFoundException;
+import com.sample.client.services.exception.DocumentNotFoundException;
+import com.sample.client.services.exception.ServiceException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Mock Client Services.
@@ -33,6 +41,8 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 
 	private static final Set<OrganisationDetail> ORGANISATIONS = new HashSet<>();
 
+	private static final Map<String, DocumentDetail> DOCUMENTS = createDocuments();
+
 	static {
 		for (int i = 1; i < 10; i++) {
 			INDIVIDUALS.add(createIndividual(i));
@@ -41,6 +51,7 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 		for (int i = 1; i < 10; i++) {
 			ORGANISATIONS.add(createOrganisation(i));
 		}
+
 	}
 
 	/**
@@ -143,6 +154,50 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 			summary.setIdentifications(new ArrayList<PassportDetail>(detail.getIdentifications()));
 		}
 		return summary;
+	}
+
+	private static Map<String, DocumentDetail> createDocuments() {
+		// Build mock list of document details
+		Map<String, DocumentDetail> docs = new HashMap<>();
+		int idx = 0;
+		for (String name : new String[]{"Einstein", "Bohr", "Maxwell", "Curie", "Schrodinger", "Feynman", "Young", "Roentgen"}) {
+			DocumentDetail doc = createImageDocument(idx++, name);
+			docs.put(doc.getDocumentId(), doc);
+		}
+		for (String name : new String[]{"document1", "document2"}) {
+			DocumentDetail doc = createWordDocument(idx++, name);
+			docs.put(doc.getDocumentId(), doc);
+		}
+		for (String name : new String[]{"sample1", "sample2"}) {
+			DocumentDetail doc = createPdfDocument(idx++, name);
+			docs.put(doc.getDocumentId(), doc);
+		}
+		return docs;
+	}
+
+	private static DocumentDetail createImageDocument(final int idx, final String name) {
+		return new DocumentDetail(createId(idx), name, createDate(idx), "/sample/images/" + name + ".jpg");
+	}
+
+	private static DocumentDetail createPdfDocument(final int idx, final String name) {
+		return new DocumentDetail(createId(idx), name, createDate(idx), "/sample/docs/" + name + ".pdf");
+	}
+
+	private static DocumentDetail createWordDocument(final int idx, final String name) {
+		return new DocumentDetail(createId(idx), name, createDate(idx), "/sample/docs/" + name + ".docx");
+	}
+
+	private static String createId(final int idx) {
+		return "doc-" + new DecimalFormat("000").format(idx);
+	}
+
+	private static Date createDate(final int idx) {
+		int yr = 2010 - (idx % 4);
+		int mth = 12 - (idx % 3);
+		int day = 28 - (idx % 7);
+		Calendar dt = Calendar.getInstance();
+		dt.set(yr, mth, day);
+		return dt.getTime();
 	}
 
 	/**
@@ -289,43 +344,52 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 	@Override
 	public List<DocumentDetail> retrieveClientDocuments(final String clientId) throws ServiceException, ClientNotFoundException {
 		// Build mock list of document details
-		List<DocumentDetail> docs = new ArrayList<>();
-		int idx = 0;
-		for (String name : new String[]{"Einstein", "Bohr", "Maxwell", "Curie", "Schrodinger", "Feynman", "Young", "Roentgen"}) {
-			docs.add(createImageDocument(idx++, name));
-		}
-		for (String name : new String[]{"document1", "document2"}) {
-			docs.add(createWordDocument(idx++, name));
-		}
-		for (String name : new String[]{"sample1", "sample2"}) {
-			docs.add(createPdfDocument(idx++, name));
-		}
+		List<DocumentDetail> docs = new ArrayList<>(DOCUMENTS.values());
 		return docs;
 	}
 
-	private DocumentDetail createImageDocument(final int idx, final String name) {
-		return new DocumentDetail(createId(idx), name, createDate(idx), "/sample/images/" + name + ".jpg");
+	@Override
+	public DocumentContent retrieveDocument(final String documentId) throws ServiceException, DocumentNotFoundException {
+
+		DocumentDetail doc = DOCUMENTS.get(documentId);
+		if (doc == null) {
+			throw new DocumentNotFoundException();
+		}
+
+		// Sleep for 3 seconds
+		try {
+			Thread.currentThread().sleep(3000);
+		} catch (InterruptedException e) {
+			throw new ServiceException("Could not process thread. " + e.getMessage(), e);
+		}
+
+		DocumentContent content = new DocumentContent(documentId, getDocumentBytes(doc), doc.getResourcePath(), getDocumentMimeType(doc));
+		return content;
 	}
 
-	private DocumentDetail createPdfDocument(final int idx, final String name) {
-		return new DocumentDetail(createId(idx), name, createDate(idx), "/sample/docs/" + name + ".pdf");
+	/**
+	 * @return the bytes from the resource
+	 */
+	private byte[] getDocumentBytes(final DocumentDetail doc) throws ServiceException {
+		try (InputStream stream = getClass().getResourceAsStream(doc.getResourcePath())) {
+			return IOUtils.toByteArray(stream);
+		} catch (Exception e) {
+			throw new ServiceException("Error loading resource." + e.getMessage(), e);
+		}
 	}
 
-	private DocumentDetail createWordDocument(final int idx, final String name) {
-		return new DocumentDetail(createId(idx), name, createDate(idx), "/sample/docs/" + name + ".docx");
-	}
-
-	private String createId(final int idx) {
-		return "doc-" + new DecimalFormat("000").format(idx);
-	}
-
-	private Date createDate(final int idx) {
-		int yr = 2010 - (idx % 4);
-		int mth = 12 - (idx % 3);
-		int day = 28 - (idx % 7);
-		Calendar dt = Calendar.getInstance();
-		dt.set(yr, mth, day);
-		return dt.getTime();
+	private String getDocumentMimeType(final DocumentDetail doc) {
+		String resource = doc.getResourcePath();
+		// Just the MIME Types for the MOCK Data
+		if (resource.endsWith("jpg")) {
+			return "image/jpg";
+		} else if (resource.endsWith("pdf")) {
+			return "application/pdf";
+		} else if (resource.endsWith("docx")) {
+			return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+		} else {
+			return "";
+		}
 	}
 
 }
