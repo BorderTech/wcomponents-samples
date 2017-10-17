@@ -5,6 +5,7 @@ import com.github.bordertech.wcomponents.ActionEvent;
 import com.github.bordertech.wcomponents.ContentAccess;
 import com.github.bordertech.wcomponents.HeadingLevel;
 import com.github.bordertech.wcomponents.MessageContainer;
+import com.github.bordertech.wcomponents.MyTab;
 import com.github.bordertech.wcomponents.Request;
 import com.github.bordertech.wcomponents.SimpleBeanBoundTableModel;
 import com.github.bordertech.wcomponents.WButton;
@@ -241,10 +242,14 @@ public class DocumentView extends WSection implements MessageContainer {
 			WPanel panel = new WPanel();
 			int nameIdx = selected.getResourcePath().lastIndexOf("/");
 			String tabName = nameIdx == -1 ? selected.getResourcePath() : selected.getResourcePath().substring(nameIdx + 1);
+			boolean cached = CacheServiceUtil.getResult(selected.getDocumentId()) != null;
+			WTabSet.TabMode mode = cached ? WTabSet.TabMode.CLIENT : WTabSet.TabMode.LAZY;
 			if (idx++ == 1) {
-				tabSet.addTab(panel, tabName, WTabSet.TabMode.LAZY, '1');
+				MyTab tab = new MyTab(panel, tabName, mode, '1');
+				tabSet.add(tab);
 			} else {
-				tabSet.addTab(panel, tabName, WTabSet.TabMode.LAZY);
+				MyTab tab = new MyTab(panel, tabName, mode);
+				tabSet.add(tab);
 			}
 			panel.add(new PollingViewer(selected));
 		}
