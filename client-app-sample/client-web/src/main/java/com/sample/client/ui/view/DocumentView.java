@@ -1,17 +1,19 @@
 package com.sample.client.ui.view;
 
+import com.github.bordertech.taskmanager.service.ResultHolder;
+import com.github.bordertech.taskmanager.service.ServiceAction;
+import com.github.bordertech.taskmanager.service.ServiceException;
+import com.github.bordertech.taskmanager.service.ServiceUtil;
 import com.github.bordertech.wcomponents.Action;
 import com.github.bordertech.wcomponents.ActionEvent;
 import com.github.bordertech.wcomponents.ContentAccess;
 import com.github.bordertech.wcomponents.HeadingLevel;
 import com.github.bordertech.wcomponents.MessageContainer;
-import com.github.bordertech.wcomponents.MyTab;
 import com.github.bordertech.wcomponents.Request;
 import com.github.bordertech.wcomponents.SimpleBeanBoundTableModel;
 import com.github.bordertech.wcomponents.WButton;
 import com.github.bordertech.wcomponents.WContent;
 import com.github.bordertech.wcomponents.WDateField;
-import com.github.bordertech.wcomponents.WDiv;
 import com.github.bordertech.wcomponents.WFigure;
 import com.github.bordertech.wcomponents.WHeading;
 import com.github.bordertech.wcomponents.WImage;
@@ -27,22 +29,22 @@ import com.github.bordertech.wcomponents.WTable;
 import com.github.bordertech.wcomponents.WTableColumn;
 import com.github.bordertech.wcomponents.WText;
 import com.github.bordertech.wcomponents.WebUtilities;
-import com.github.bordertech.wcomponents.polling.PollingException;
-import com.github.bordertech.wcomponents.polling.ServiceAction;
-import com.github.bordertech.wcomponents.task.TaskManager;
-import com.github.bordertech.wcomponents.task.TaskManagerFactory;
+import com.github.bordertech.wcomponents.lib.common.WDiv;
+import com.github.bordertech.wcomponents.lib.common.WLibTab;
+import com.github.bordertech.wcomponents.lib.polling.PollingServicePanel;
+import com.github.bordertech.wcomponents.lib.polling.PollingStartType;
 import com.sample.client.model.DocumentContent;
 import com.sample.client.model.DocumentDetail;
 import com.sample.client.services.ClientServicesHelper;
 import com.sample.client.ui.application.ClientApp;
 import com.sample.client.ui.common.ClientWMessages;
 import com.sample.client.ui.common.Constants;
-import com.sample.client.ui.util.CacheServiceUtil;
 import com.sample.client.ui.util.ClientServicesHelperFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import javax.cache.Cache;
 
 /**
  * Document view.
@@ -54,7 +56,7 @@ public class DocumentView extends WSection implements MessageContainer {
 
 	private static final ClientServicesHelper CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
 
-	private static final TaskManager TASK_MANAGER = TaskManagerFactory.getInstance();
+	private static final Cache<String, ResultHolder> CACHE = ServiceUtil.getResultHolderCache("sample-docs-cache");
 
 	private final ClientApp app;
 
@@ -65,6 +67,17 @@ public class DocumentView extends WSection implements MessageContainer {
 	private final WDiv ajaxPanel = new WDiv();
 
 	private final WTable table = new WTable();
+
+	private static final ServiceAction<DocumentDetail, DocumentContent> RETREIVE_DOC_ACTION = new ServiceAction<DocumentDetail, DocumentContent>() {
+		@Override
+		public DocumentContent service(final DocumentDetail document) {
+			try {
+				return CLIENT_SERVICES.retrieveDocument(document.getDocumentId());
+			} catch (Exception e) {
+				throw new ServiceException("Error retrieveing document [" + document + "]. " + e.getMessage(), e);
+			}
+		}
+	};
 
 	/**
 	 * @param app the client app.
@@ -127,13 +140,12 @@ public class DocumentView extends WSection implements MessageContainer {
 		// Setup laucnher link for the table column
 		PollingLauncher launcherLink = new PollingLauncher() {
 			@Override
-			protected void handleInitContent(final Request request) {
+			protected void handleInitPollingPanel(final Request request) {
 				DocumentDetail doc = (DocumentDetail) getBean();
 				setServiceCriteria(doc);
-				super.handleInitContent(request); //To change body of generated methods, choose Tools | Templates.
+				super.handleInitPollingPanel(request);
 			}
 		};
-		launcherLink.setManualStart(true);
 		launcherLink.setVisible(true);
 		launcherLink.getStartButton().setRenderAsLink(true);
 
@@ -201,7 +213,7 @@ public class DocumentView extends WSection implements MessageContainer {
 
 	public void doHandleClearCache() {
 		for (DocumentDetail doc : getDocuments()) {
-			CacheServiceUtil.clearResult(doc.getDocumentId());
+			CACHE.remove(doc.getDocumentId());
 		}
 	}
 
@@ -242,13 +254,13 @@ public class DocumentView extends WSection implements MessageContainer {
 			WPanel panel = new WPanel();
 			int nameIdx = selected.getResourcePath().lastIndexOf("/");
 			String tabName = nameIdx == -1 ? selected.getResourcePath() : selected.getResourcePath().substring(nameIdx + 1);
-			boolean cached = CacheServiceUtil.getResult(selected.getDocumentId()) != null;
+			boolean cached = CACHE.containsKey(selected.getDocumentId());
 			WTabSet.TabMode mode = cached ? WTabSet.TabMode.CLIENT : WTabSet.TabMode.LAZY;
 			if (idx++ == 1) {
-				MyTab tab = new MyTab(panel, tabName, mode, '1');
+				WLibTab tab = new WLibTab(panel, tabName, mode, '1');
 				tabSet.add(tab);
 			} else {
-				MyTab tab = new MyTab(panel, tabName, mode);
+				WLibTab tab = new WLibTab(panel, tabName, mode);
 				tabSet.add(tab);
 			}
 			panel.add(new PollingViewer(selected));
@@ -268,6 +280,7 @@ public class DocumentView extends WSection implements MessageContainer {
 		super.preparePaintComponent(request);
 		if (!isInitialised()) {
 			try {
+				// Dummy service to load the documents tables
 				List<DocumentDetail> docs = CLIENT_SERVICES.retrieveClientDocuments("dummyId");
 				if (docs != null && !docs.isEmpty()) {
 					setDocuments(docs);
@@ -295,7 +308,7 @@ public class DocumentView extends WSection implements MessageContainer {
 			return;
 		}
 		int prev = getPrevIndex();
-		int load = -1;
+		int load;
 		if (current == docs.size() - 1) {
 			// At end (less 1)
 			load = current - 1;
@@ -311,35 +324,8 @@ public class DocumentView extends WSection implements MessageContainer {
 		// Check if we can preload a document
 		if (load > -1 && load < docs.size()) {
 			DocumentDetail doc = docs.get(load);
-			preLoadDocument(doc.getDocumentId());
-		}
-	}
-
-	private void preLoadDocument(final String documentId) {
-
-		// Already loaded
-		if (CacheServiceUtil.getResult(documentId) != null) {
-			return;
-		}
-
-		Runnable task = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					if (!CacheServiceUtil.isProcessing(documentId)) {
-						CacheServiceUtil.startProcessing(documentId);
-						DocumentContent content = CLIENT_SERVICES.retrieveDocument(documentId);
-						CacheServiceUtil.setResult(documentId, content);
-					}
-				} catch (Exception e) {
-					CacheServiceUtil.setResult(documentId, e);
-				}
-			}
-		};
-		try {
-			TASK_MANAGER.submit(task, null);
-		} catch (Exception e) {
-			// LOG Error
+			// Retrieve Document (Will only start if it is not in the cache)
+			ServiceUtil.handleAsyncServiceCall(CACHE, doc.getDocumentId(), doc, RETREIVE_DOC_ACTION);
 		}
 	}
 
@@ -414,7 +400,10 @@ public class DocumentView extends WSection implements MessageContainer {
 		}
 	}
 
-	private static class PollingLauncher extends PollingCachePanel<DocumentDetail, DocumentContent> {
+	/**
+	 * Polling panel that provides a link to the document content (once retrieved).
+	 */
+	private static class PollingLauncher extends PollingServicePanel<DocumentDetail, DocumentContent> {
 
 		private final WContent content = new WContent();
 		private final WPopup popup = new WPopup() {
@@ -442,17 +431,10 @@ public class DocumentView extends WSection implements MessageContainer {
 			getContentResultHolder().add(popup);
 			getContentResultHolder().add(link);
 
-			// The service action
-			setServiceAction(new ServiceAction<DocumentDetail, DocumentContent>() {
-				@Override
-				public DocumentContent service(final DocumentDetail criteria) throws PollingException {
-					try {
-						return CLIENT_SERVICES.retrieveDocument(criteria.getDocumentId());
-					} catch (Exception e) {
-						throw new PollingException("Error loading document [" + criteria.getDocumentId() + "]. " + e.getMessage(), e);
-					}
-				}
-			});
+			// Service action
+			setServiceAction(RETREIVE_DOC_ACTION);
+			// Start with a button
+			setStartType(PollingStartType.BUTTON);
 		}
 
 		public void popupOnly() {
@@ -460,8 +442,8 @@ public class DocumentView extends WSection implements MessageContainer {
 		}
 
 		@Override
-		protected void handleInitContent(final Request request) {
-			super.handleInitContent(request);
+		protected void handleInitPollingPanel(final Request request) {
+			super.handleInitPollingPanel(request);
 			DocumentDetail doc = getServiceCriteria();
 			getStartButton().setText(doc.getResourcePath());
 		}
@@ -469,7 +451,7 @@ public class DocumentView extends WSection implements MessageContainer {
 		@Override
 		protected void handleInitResultContent(final Request request) {
 			super.handleInitResultContent(request);
-			DocumentContent doc = getServiceResult();
+			DocumentContent doc = getServiceResult().getResult();
 			String key = doc.getDocumentId() + "-" + doc.getFilename();
 			content.setContentAccess(new ContentWrapper(doc));
 			content.setCacheKey(key);
@@ -479,13 +461,21 @@ public class DocumentView extends WSection implements MessageContainer {
 		}
 
 		@Override
-		protected String getCacheKey(final DocumentDetail criteria) {
-			return criteria.getDocumentId();
+		public String getServiceCacheKey() {
+			return getServiceCriteria().getDocumentId();
+		}
+
+		@Override
+		protected Cache<String, ResultHolder> getServiceCache() {
+			return CACHE;
 		}
 
 	}
 
-	private static class PollingViewer extends PollingCachePanel<DocumentDetail, DocumentContent> {
+	/**
+	 * Polling panel that automatically loads document content.
+	 */
+	private static class PollingViewer extends PollingServicePanel<DocumentDetail, DocumentContent> {
 
 		private final WContent content = new WContent();
 
@@ -496,19 +486,10 @@ public class DocumentView extends WSection implements MessageContainer {
 		public PollingViewer(final DocumentDetail document) {
 			setServiceCriteria(document);
 			getContentResultHolder().add(content);
-
-			// The service action
-			setServiceAction(new ServiceAction<DocumentDetail, DocumentContent>() {
-				@Override
-				public DocumentContent service(final DocumentDetail criteria) throws PollingException {
-					try {
-						return CLIENT_SERVICES.retrieveDocument(criteria.getDocumentId());
-					} catch (Exception e) {
-						throw new PollingException("Error loading document [" + criteria.getDocumentId() + "]. " + e.getMessage(), e);
-					}
-				}
-			});
-
+			// Service action
+			setServiceAction(RETREIVE_DOC_ACTION);
+			// AUTO Start
+			setStartType(PollingStartType.AUTOMATIC);
 		}
 
 		@Override
@@ -516,7 +497,7 @@ public class DocumentView extends WSection implements MessageContainer {
 			super.handleInitResultContent(request);
 
 			// Document Content
-			DocumentContent doc = getServiceResult();
+			DocumentContent doc = getServiceResult().getResult();
 
 			// Setup the viewing option (based on MIME Type)
 			WDiv holder = getContentResultHolder();
@@ -569,8 +550,13 @@ public class DocumentView extends WSection implements MessageContainer {
 		}
 
 		@Override
-		protected String getCacheKey(final DocumentDetail criteria) {
-			return criteria.getDocumentId();
+		public String getServiceCacheKey() {
+			return getServiceCriteria().getDocumentId();
+		}
+
+		@Override
+		protected Cache<String, ResultHolder> getServiceCache() {
+			return CACHE;
 		}
 
 	}
