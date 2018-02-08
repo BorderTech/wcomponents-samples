@@ -1,38 +1,35 @@
 package com.sample.client.ui.view;
 
+import com.github.bordertech.didums.Didums;
 import com.github.bordertech.taskmanager.service.ResultHolder;
 import com.github.bordertech.taskmanager.service.ServiceAction;
 import com.github.bordertech.taskmanager.service.ServiceException;
-import com.github.bordertech.taskmanager.service.ServiceUtil;
+import com.github.bordertech.taskmanager.service.ServiceHelper;
 import com.github.bordertech.wcomponents.Action;
 import com.github.bordertech.wcomponents.ActionEvent;
-import com.github.bordertech.wcomponents.ContentAccess;
-import com.github.bordertech.wcomponents.HeadingLevel;
+import com.github.bordertech.wcomponents.Margin;
+import com.github.bordertech.wcomponents.MenuSelectContainer;
 import com.github.bordertech.wcomponents.MessageContainer;
+import com.github.bordertech.wcomponents.MutableContainer;
 import com.github.bordertech.wcomponents.Request;
 import com.github.bordertech.wcomponents.SimpleBeanBoundTableModel;
+import com.github.bordertech.wcomponents.Size;
+import com.github.bordertech.wcomponents.WAjaxControl;
 import com.github.bordertech.wcomponents.WButton;
-import com.github.bordertech.wcomponents.WContent;
 import com.github.bordertech.wcomponents.WDateField;
-import com.github.bordertech.wcomponents.WFigure;
-import com.github.bordertech.wcomponents.WHeading;
 import com.github.bordertech.wcomponents.WImage;
-import com.github.bordertech.wcomponents.WLink;
 import com.github.bordertech.wcomponents.WMenu;
 import com.github.bordertech.wcomponents.WMenuItem;
 import com.github.bordertech.wcomponents.WMessages;
 import com.github.bordertech.wcomponents.WPanel;
-import com.github.bordertech.wcomponents.WPopup;
 import com.github.bordertech.wcomponents.WSection;
 import com.github.bordertech.wcomponents.WTabSet;
 import com.github.bordertech.wcomponents.WTable;
 import com.github.bordertech.wcomponents.WTableColumn;
 import com.github.bordertech.wcomponents.WText;
-import com.github.bordertech.wcomponents.WebUtilities;
+import com.github.bordertech.wcomponents.layout.ColumnLayout;
 import com.github.bordertech.wcomponents.lib.common.WDiv;
 import com.github.bordertech.wcomponents.lib.common.WLibTab;
-import com.github.bordertech.wcomponents.lib.polling.PollingServicePanel;
-import com.github.bordertech.wcomponents.lib.polling.PollingStartType;
 import com.sample.client.model.DocumentContent;
 import com.sample.client.model.DocumentDetail;
 import com.sample.client.services.ClientServicesHelper;
@@ -40,6 +37,9 @@ import com.sample.client.ui.application.ClientApp;
 import com.sample.client.ui.common.ClientWMessages;
 import com.sample.client.ui.common.Constants;
 import com.sample.client.ui.util.ClientServicesHelperFactory;
+import com.sample.client.ui.view.polling.PollingLauncher;
+import com.sample.client.ui.view.polling.PollingViewer;
+import com.sun.org.apache.bcel.internal.util.Objects;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -54,21 +54,11 @@ import javax.cache.Cache;
  */
 public class DocumentView extends WSection implements MessageContainer {
 
-	private static final ClientServicesHelper CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
+	private static final ServiceHelper SERVICE_HELPER = Didums.getService(ServiceHelper.class);
 
-	private static final Cache<String, ResultHolder> CACHE = ServiceUtil.getResultHolderCache("sample-docs-cache");
+	public static final Cache<String, ResultHolder> CACHE = SERVICE_HELPER.getResultHolderCache("sample-docs-cache");
 
-	private final ClientApp app;
-
-	private final WMessages messages = new ClientWMessages();
-
-	private final WMenu menu = new WMenu();
-
-	private final WDiv ajaxPanel = new WDiv();
-
-	private final WTable table = new WTable();
-
-	private static final ServiceAction<DocumentDetail, DocumentContent> RETREIVE_DOC_ACTION = new ServiceAction<DocumentDetail, DocumentContent>() {
+	public static final ServiceAction<DocumentDetail, DocumentContent> RETREIVE_DOC_ACTION = new ServiceAction<DocumentDetail, DocumentContent>() {
 		@Override
 		public DocumentContent service(final DocumentDetail document) {
 			try {
@@ -78,6 +68,46 @@ public class DocumentView extends WSection implements MessageContainer {
 			}
 		}
 	};
+
+	private static final ClientServicesHelper CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
+
+	private final ClientApp app;
+
+	private final WMessages messages = new ClientWMessages();
+
+	private final WMenu mainMenu = new WMenu();
+
+	private final WMenu viewMenu = new WMenu();
+
+	private final WDiv ajaxPanel = new WDiv();
+
+	private final WDiv onPagePanel = new WDiv();
+
+	private final WPanel viewPanel = new WPanel();
+
+	private final WTable table = new WTable();
+
+	public enum ViewType {
+		TAB("icons/ui-tab-content-vertical-icon.png", "tabs"),
+		COL("icons/ui-split-panel-vertical-icon.png", "col"),
+		SPLIT("icons/ui-split-panel-icon.png", "split");
+
+		ViewType(final String url, final String desc) {
+			this.url = url;
+			this.desc = desc;
+		}
+
+		private final String url;
+		private final String desc;
+
+		public String getUrl() {
+			return url;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+	}
 
 	/**
 	 * @param app the client app.
@@ -89,8 +119,8 @@ public class DocumentView extends WSection implements MessageContainer {
 		WPanel content = getContent();
 
 		// Menu
-		content.add(menu);
-		setupMenu();
+		content.add(mainMenu);
+		setupMainMenu();
 
 		// Messages
 		content.add(messages);
@@ -102,6 +132,14 @@ public class DocumentView extends WSection implements MessageContainer {
 
 		// AJAX
 		content.add(ajaxPanel);
+		ajaxPanel.add(onPagePanel);
+		onPagePanel.add(viewMenu);
+		onPagePanel.add(viewPanel);
+		setupViewMenu();
+
+		viewPanel.setMargin(new Margin(Size.LARGE, Size.ZERO, Size.SMALL, Size.ZERO));
+		// Default Visibility
+		onPagePanel.setVisible(false);
 
 		// Ids
 		setIdName("docv");
@@ -109,7 +147,7 @@ public class DocumentView extends WSection implements MessageContainer {
 
 	}
 
-	private void setupMenu() {
+	private void setupMainMenu() {
 		WMenuItem item = new WMenuItem("Back");
 		item.setAction(new Action() {
 			@Override
@@ -117,7 +155,7 @@ public class DocumentView extends WSection implements MessageContainer {
 				app.showSearch();
 			}
 		});
-		menu.add(item);
+		mainMenu.add(item);
 
 		item = new WMenuItem("Reset");
 		item.setAction(new Action() {
@@ -126,7 +164,45 @@ public class DocumentView extends WSection implements MessageContainer {
 				doReset();
 			}
 		});
-		menu.add(item);
+		mainMenu.add(item);
+
+		// Clear Cache
+		item = new WMenuItem("Clear Cache");
+		item.setAction(new Action() {
+			@Override
+			public void execute(final ActionEvent event) {
+				doHandleClearCache();
+				doReset();
+			}
+		});
+		mainMenu.add(item);
+	}
+
+	private void setupViewMenu() {
+
+		viewMenu.setSelectionMode(MenuSelectContainer.SelectionMode.SINGLE);
+
+		// View type
+		for (ViewType type : ViewType.values()) {
+			final ViewType viewtype = type;
+			WMenuItem item = new WMenuItem(type.getDesc()) {
+				@Override
+				public boolean isSelected() {
+					return Objects.equals(viewtype, getCurrentViewType());
+				}
+			};
+			WImage image = new WImage();
+			image.setImageUrl(type.getUrl());
+			item.getDecoratedLabel().setHead(image);
+			item.setAction(new Action() {
+				@Override
+				public void execute(final ActionEvent event) {
+					doHandleViewMenuAction(viewtype);
+				}
+			});
+			viewMenu.add(item);
+			onPagePanel.add(new WAjaxControl(item, viewPanel));
+		}
 
 	}
 
@@ -147,7 +223,6 @@ public class DocumentView extends WSection implements MessageContainer {
 			}
 		};
 		launcherLink.setVisible(true);
-		launcherLink.getStartButton().setRenderAsLink(true);
 
 		table.setMargin(Constants.SOUTH_MARGIN_LARGE);
 		table.addColumn(new WTableColumn("ID", new WText()));
@@ -177,7 +252,7 @@ public class DocumentView extends WSection implements MessageContainer {
 			}
 		});
 		table.addAction(selButton);
-		table.addActionConstraint(selButton, new WTable.ActionConstraint(1, 0, true, "Please select at least one document to view."));
+		table.addActionConstraint(selButton, new WTable.ActionConstraint(1, 0, true, "Please select at least one document to launch."));
 
 		// Select Documents
 		selButton = new WButton("View selected on page");
@@ -189,87 +264,10 @@ public class DocumentView extends WSection implements MessageContainer {
 			}
 		});
 		table.addAction(selButton);
-//		table.addActionConstraint(selButton, new WTable.ActionConstraint(1, 0, true, "Please select at least one document to view."));
-
-		// Clear Cache
-		selButton = new WButton("Clear Cache");
-		selButton.setAction(new Action() {
-			@Override
-			public void execute(final ActionEvent event) {
-				doHandleClearCache();
-				doReset();
-			}
-		});
-		table.addAction(selButton);
+		table.addActionConstraint(selButton, new WTable.ActionConstraint(1, 0, true, "Please select at least one document to view."));
 
 	}
 
-	/**
-	 * Refresh results. Remove results from the cache.
-	 */
-	public void doReset() {
-		reset();
-	}
-
-	public void doHandleClearCache() {
-		for (DocumentDetail doc : getDocuments()) {
-			CACHE.remove(doc.getDocumentId());
-		}
-	}
-
-	public void doHandleLaunch() {
-		ajaxPanel.reset();
-		// TODO Can replace with a WRepeater
-		for (DocumentDetail selected : orderSelectedDocuments()) {
-			PollingLauncher launcher = new PollingLauncher(selected);
-			launcher.popupOnly();
-			ajaxPanel.add(launcher);
-		}
-	}
-
-	public void doHandleShowOnPage() {
-		ajaxPanel.reset();
-
-		// Create the tab set
-		final WTabSet tabSet = new WTabSet(WTabSet.TabSetType.LEFT);
-		tabSet.setActionOnChange(new Action() {
-			@Override
-			public void execute(final ActionEvent event) {
-				int current = tabSet.getActiveIndex();
-				doHandleTabChanged(current);
-			}
-		});
-		ajaxPanel.add(tabSet);
-
-		// Save the ordered documents
-		ArrayList<DocumentDetail> docs = orderSelectedDocuments();
-		setSelectedDocs(docs);
-
-		// Start loading of second document
-		doHandleTabChanged(0);
-
-		// Setup tabs
-		int idx = 1;
-		for (DocumentDetail selected : docs) {
-			WPanel panel = new WPanel();
-			int nameIdx = selected.getResourcePath().lastIndexOf("/");
-			String tabName = nameIdx == -1 ? selected.getResourcePath() : selected.getResourcePath().substring(nameIdx + 1);
-			boolean cached = CACHE.containsKey(selected.getDocumentId());
-			WTabSet.TabMode mode = cached ? WTabSet.TabMode.CLIENT : WTabSet.TabMode.LAZY;
-			if (idx++ == 1) {
-				WLibTab tab = new WLibTab(panel, tabName, mode, '1');
-				tabSet.add(tab);
-			} else {
-				WLibTab tab = new WLibTab(panel, tabName, mode);
-				tabSet.add(tab);
-			}
-			panel.add(new PollingViewer(selected));
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public WMessages getMessages() {
 		return messages;
@@ -293,13 +291,118 @@ public class DocumentView extends WSection implements MessageContainer {
 		}
 	}
 
-	private void setDocuments(final List<DocumentDetail> docs) {
-		table.setBean(docs);
+	/**
+	 * Refresh results. Remove results from the cache.
+	 */
+	protected void doReset() {
+		reset();
 	}
 
-	private List<DocumentDetail> getDocuments() {
-		List<DocumentDetail> docs = (List<DocumentDetail>) table.getBean();
-		return docs == null ? Collections.EMPTY_LIST : docs;
+	/**
+	 * Clear the Cache
+	 */
+	protected void doHandleClearCache() {
+		for (DocumentDetail doc : getDocuments()) {
+			CACHE.remove(doc.getDocumentId());
+		}
+	}
+
+	protected void doHandleLaunch() {
+		ajaxPanel.reset();
+		// TODO Can replace with a WRepeater
+		for (DocumentDetail selected : orderSelectedDocuments()) {
+			PollingLauncher launcher = new PollingLauncher(selected);
+			launcher.popupOnly();
+			ajaxPanel.add(launcher);
+		}
+	}
+
+	protected void setCurrentViewType(final ViewType type) {
+		setAttribute("viewType", type);
+	}
+
+	protected ViewType getCurrentViewType() {
+		ViewType type = (ViewType) getAttribute("viewType");
+		return type == null ? ViewType.TAB : type;
+	}
+
+	protected void doHandleViewMenuAction(final ViewType type) {
+		// Check if changed
+		if (Objects.equals(type, getCurrentViewType())) {
+			return;
+		}
+		setCurrentViewType(type);
+		setupView();
+	}
+
+	protected void doHandleShowOnPage() {
+		ajaxPanel.reset();
+		// Save the ordered documents (on the AJAX Panel)
+		ArrayList<DocumentDetail> docs = orderSelectedDocuments();
+		setSelectedDocs(docs);
+
+		// Setup the view
+		onPagePanel.setVisible(true);
+		setupView();
+	}
+
+	protected void setupView() {
+		viewPanel.reset();
+		switch (getCurrentViewType()) {
+			case TAB:
+				setupTabView();
+				break;
+			case COL:
+				addSelectedToContainer(viewPanel);
+				break;
+			case SPLIT:
+				viewPanel.setLayout(new ColumnLayout(new int[]{50, 50}, Size.MEDIUM, Size.MEDIUM));
+				addSelectedToContainer(viewPanel);
+				break;
+		}
+	}
+
+	protected void addSelectedToContainer(final MutableContainer container) {
+		for (DocumentDetail selected : getSelectedDocs()) {
+			WPanel panel = new WPanel();
+			panel.setMargin(new Margin(Size.ZERO, Size.ZERO, Size.LARGE, Size.ZERO));
+			container.add(panel);
+			panel.add(new PollingViewer(selected));
+		}
+	}
+
+	protected void setupTabView() {
+		// Create the tab set
+		final WTabSet tabSet = new WTabSet(WTabSet.TabSetType.LEFT);
+		tabSet.setActionOnChange(new Action() {
+			@Override
+			public void execute(final ActionEvent event) {
+				int current = tabSet.getActiveIndex();
+				doHandleTabChanged(current);
+			}
+		});
+		viewPanel.add(tabSet);
+
+		// Start loading of second document
+		doHandleTabChanged(0);
+
+		// Setup tabs
+		int idx = 1;
+		for (DocumentDetail selected : getSelectedDocs()) {
+			WPanel panel = new WPanel();
+			int nameIdx = selected.getResourcePath().lastIndexOf("/");
+			String tabName = nameIdx == -1 ? selected.getResourcePath() : selected.getResourcePath().substring(nameIdx + 1);
+			boolean cached = CACHE.containsKey(selected.getDocumentId());
+			WTabSet.TabMode mode = cached ? WTabSet.TabMode.CLIENT : WTabSet.TabMode.LAZY;
+			if (idx++ == 1) {
+				WLibTab tab = new WLibTab(panel, tabName, mode, '1');
+				tabSet.add(tab);
+			} else {
+				WLibTab tab = new WLibTab(panel, tabName, mode);
+				tabSet.add(tab);
+			}
+			panel.add(new PollingViewer(selected));
+		}
 	}
 
 	private void doHandleTabChanged(final int current) {
@@ -325,7 +428,7 @@ public class DocumentView extends WSection implements MessageContainer {
 		if (load > -1 && load < docs.size()) {
 			DocumentDetail doc = docs.get(load);
 			// Retrieve Document (Will only start if it is not in the cache)
-			ServiceUtil.handleAsyncServiceCall(CACHE, doc.getDocumentId(), doc, RETREIVE_DOC_ACTION);
+			SERVICE_HELPER.handleAsyncServiceCall(CACHE, doc.getDocumentId(), doc, RETREIVE_DOC_ACTION);
 		}
 	}
 
@@ -345,6 +448,15 @@ public class DocumentView extends WSection implements MessageContainer {
 
 	private void setPrevIndex(final Integer prev) {
 		ajaxPanel.setAttribute("prev", prev);
+	}
+
+	private void setDocuments(final List<DocumentDetail> docs) {
+		table.setBean(docs);
+	}
+
+	private List<DocumentDetail> getDocuments() {
+		List<DocumentDetail> docs = (List<DocumentDetail>) table.getBean();
+		return docs == null ? Collections.EMPTY_LIST : docs;
 	}
 
 	private ArrayList<DocumentDetail> orderSelectedDocuments() {
@@ -376,188 +488,4 @@ public class DocumentView extends WSection implements MessageContainer {
 		return sorted;
 	}
 
-	private static class ContentWrapper implements ContentAccess {
-
-		private final DocumentContent content;
-
-		public ContentWrapper(final DocumentContent content) {
-			this.content = content;
-		}
-
-		@Override
-		public byte[] getBytes() {
-			return content.getBytes();
-		}
-
-		@Override
-		public String getDescription() {
-			return content.getFilename();
-		}
-
-		@Override
-		public String getMimeType() {
-			return content.getMimeType();
-		}
-	}
-
-	/**
-	 * Polling panel that provides a link to the document content (once retrieved).
-	 */
-	private static class PollingLauncher extends PollingServicePanel<DocumentDetail, DocumentContent> {
-
-		private final WContent content = new WContent();
-		private final WPopup popup = new WPopup() {
-			@Override
-			public String getUrl() {
-				return content.getUrl();
-			}
-		};
-		// Link to content (after retrieved result)
-		private final WLink link = new WLink() {
-			@Override
-			public String getUrl() {
-				return content.getUrl();
-			}
-		};
-
-		public PollingLauncher() {
-			this(null);
-		}
-
-		public PollingLauncher(final DocumentDetail document) {
-			setServiceCriteria(document);
-
-			getContentResultHolder().add(content);
-			getContentResultHolder().add(popup);
-			getContentResultHolder().add(link);
-
-			// Service action
-			setServiceAction(RETREIVE_DOC_ACTION);
-			// Start with a button
-			setStartType(PollingStartType.BUTTON);
-		}
-
-		public void popupOnly() {
-			link.setVisible(false);
-		}
-
-		@Override
-		protected void handleInitPollingPanel(final Request request) {
-			super.handleInitPollingPanel(request);
-			DocumentDetail doc = getServiceCriteria();
-			getStartButton().setText(doc.getResourcePath());
-		}
-
-		@Override
-		protected void handleInitResultContent(final Request request) {
-			super.handleInitResultContent(request);
-			DocumentContent doc = getServiceResult().getResult();
-			String key = doc.getDocumentId() + "-" + doc.getFilename();
-			content.setContentAccess(new ContentWrapper(doc));
-			content.setCacheKey(key);
-			popup.setTargetWindow(key);
-			popup.setVisible(true);
-			link.setText(getStartButton().getText());
-		}
-
-		@Override
-		public String getServiceCacheKey() {
-			return getServiceCriteria().getDocumentId();
-		}
-
-		@Override
-		protected Cache<String, ResultHolder> getServiceCache() {
-			return CACHE;
-		}
-
-	}
-
-	/**
-	 * Polling panel that automatically loads document content.
-	 */
-	private static class PollingViewer extends PollingServicePanel<DocumentDetail, DocumentContent> {
-
-		private final WContent content = new WContent();
-
-		public PollingViewer() {
-			this(null);
-		}
-
-		public PollingViewer(final DocumentDetail document) {
-			setServiceCriteria(document);
-			getContentResultHolder().add(content);
-			// Service action
-			setServiceAction(RETREIVE_DOC_ACTION);
-			// AUTO Start
-			setStartType(PollingStartType.AUTOMATIC);
-		}
-
-		@Override
-		protected void handleInitResultContent(final Request request) {
-			super.handleInitResultContent(request);
-
-			// Document Content
-			DocumentContent doc = getServiceResult().getResult();
-
-			// Setup the viewing option (based on MIME Type)
-			WDiv holder = getContentResultHolder();
-
-			String mimeType = doc.getMimeType();
-			String title = doc.getDocumentId() + "-" + doc.getFilename();
-
-			content.setContentAccess(new ContentWrapper(doc));
-			content.setCacheKey(title);
-
-			if (mimeType.startsWith("image")) {
-				// Image
-				WImage image = new WImage() {
-					@Override
-					public String getImageUrl() {
-						return content.getUrl();
-					}
-				};
-				WFigure figure = new WFigure(image, title);
-				holder.add(figure);
-			} else if (mimeType.startsWith("application/pdf")) {
-				// IFrame - PDF
-				holder.add(new WHeading(HeadingLevel.H2, title));
-				WText txt = new WText() {
-					@Override
-					public String getText() {
-						StringBuilder html = new StringBuilder();
-						html.append("<iframe src=\"");
-						html.append(WebUtilities.encodeUrl(content.getUrl()));
-						html.append("\"");
-						html.append(" style=\"width:100%; height: 50em\" ");
-						html.append("></iframe>");
-						return html.toString();
-					}
-				};
-				txt.setEncodeText(false);
-				holder.add(txt);
-			} else {
-				// Link to content
-				WLink link = new WLink() {
-					@Override
-					public String getUrl() {
-						return content.getUrl();
-					}
-				};
-				link.setText(doc.getFilename());
-				link.setTargetWindowName(title);
-				holder.add(link);
-			}
-		}
-
-		@Override
-		public String getServiceCacheKey() {
-			return getServiceCriteria().getDocumentId();
-		}
-
-		@Override
-		protected Cache<String, ResultHolder> getServiceCache() {
-			return CACHE;
-		}
-
-	}
 }
