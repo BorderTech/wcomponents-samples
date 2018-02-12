@@ -1,33 +1,47 @@
 package com.sample.client.ui.view.polling;
 
+import com.github.bordertech.taskmaster.service.ResultHolder;
 import com.github.bordertech.wcomponents.ContentAccess;
 import com.sample.client.model.DocumentContent;
 
 /**
+ * Wrap the document content.
  *
  * @author jonathan
  */
-public class ContentWrapper implements ContentAccess {
+public abstract class ContentWrapper implements ContentAccess {
 
-	private final DocumentContent content;
+	private final String fileName;
+	private final String mimeType;
 
-	public ContentWrapper(final DocumentContent content) {
-		this.content = content;
+	/**
+	 * @param fileName the file name
+	 * @param mimeType the mime type
+	 */
+	public ContentWrapper(final String fileName, final String mimeType) {
+		this.fileName = fileName;
+		this.mimeType = mimeType;
 	}
 
 	@Override
 	public byte[] getBytes() {
-		return content.getBytes();
+		return getDocument().getResult().getBytes();
 	}
 
 	@Override
 	public String getDescription() {
-		return content.getFilename();
+		return fileName;
 	}
 
 	@Override
 	public String getMimeType() {
-		return content.getMimeType();
+		return mimeType;
 	}
+
+	/**
+	 *
+	 * @return the service result (preferably from a cache)
+	 */
+	protected abstract ResultHolder<?, DocumentContent> getDocument();
 
 }

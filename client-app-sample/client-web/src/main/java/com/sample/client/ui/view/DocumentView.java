@@ -1,10 +1,10 @@
 package com.sample.client.ui.view;
 
 import com.github.bordertech.didums.Didums;
-import com.github.bordertech.taskmanager.service.ResultHolder;
-import com.github.bordertech.taskmanager.service.ServiceAction;
-import com.github.bordertech.taskmanager.service.ServiceException;
-import com.github.bordertech.taskmanager.service.ServiceHelper;
+import com.github.bordertech.taskmaster.service.ResultHolder;
+import com.github.bordertech.taskmaster.service.ServiceAction;
+import com.github.bordertech.taskmaster.service.ServiceException;
+import com.github.bordertech.taskmaster.service.ServiceHelper;
 import com.github.bordertech.wcomponents.Action;
 import com.github.bordertech.wcomponents.ActionEvent;
 import com.github.bordertech.wcomponents.Margin;
@@ -27,9 +27,9 @@ import com.github.bordertech.wcomponents.WTabSet;
 import com.github.bordertech.wcomponents.WTable;
 import com.github.bordertech.wcomponents.WTableColumn;
 import com.github.bordertech.wcomponents.WText;
+import com.github.bordertech.wcomponents.addons.common.WDiv;
+import com.github.bordertech.wcomponents.addons.common.relative.WLibTab;
 import com.github.bordertech.wcomponents.layout.ColumnLayout;
-import com.github.bordertech.wcomponents.lib.common.WDiv;
-import com.github.bordertech.wcomponents.lib.common.WLibTab;
 import com.sample.client.model.DocumentContent;
 import com.sample.client.model.DocumentDetail;
 import com.sample.client.services.ClientServicesHelper;
@@ -39,10 +39,10 @@ import com.sample.client.ui.common.Constants;
 import com.sample.client.ui.util.ClientServicesHelperFactory;
 import com.sample.client.ui.view.polling.PollingLauncher;
 import com.sample.client.ui.view.polling.PollingViewer;
-import com.sun.org.apache.bcel.internal.util.Objects;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import javax.cache.Cache;
 
@@ -88,17 +88,19 @@ public class DocumentView extends WSection implements MessageContainer {
 	private final WTable table = new WTable();
 
 	public enum ViewType {
-		TAB("icons/ui-tab-content-vertical-icon.png", "tabs"),
-		COL("icons/ui-split-panel-vertical-icon.png", "col"),
-		SPLIT("icons/ui-split-panel-icon.png", "split");
+		TAB("icons/ui-tab-content-vertical-icon.png", "tabs view ", 'T'),
+		COL("icons/ui-split-panel-vertical-icon.png", "column view", 'C'),
+		SPLIT("icons/ui-split-panel-icon.png", "split view", 'S');
 
-		ViewType(final String url, final String desc) {
+		ViewType(final String url, final String desc, final char accessKey) {
 			this.url = url;
 			this.desc = desc;
+			this.accessKey = accessKey;
 		}
 
 		private final String url;
 		private final String desc;
+		private final char accessKey;
 
 		public String getUrl() {
 			return url;
@@ -106,6 +108,10 @@ public class DocumentView extends WSection implements MessageContainer {
 
 		public String getDesc() {
 			return desc;
+		}
+
+		public char getAcccessKey() {
+			return accessKey;
 		}
 	}
 
@@ -185,12 +191,14 @@ public class DocumentView extends WSection implements MessageContainer {
 		// View type
 		for (ViewType type : ViewType.values()) {
 			final ViewType viewtype = type;
-			WMenuItem item = new WMenuItem(type.getDesc()) {
+			WMenuItem item = new WMenuItem("") {
 				@Override
 				public boolean isSelected() {
 					return Objects.equals(viewtype, getCurrentViewType());
 				}
 			};
+			item.setToolTip(type.getDesc());
+			item.setAccessKey(type.getAcccessKey());
 			WImage image = new WImage();
 			image.setImageUrl(type.getUrl());
 			item.getDecoratedLabel().setHead(image);
@@ -244,6 +252,7 @@ public class DocumentView extends WSection implements MessageContainer {
 
 		// Select Documents
 		WButton selButton = new WButton("Launch selected documents");
+		selButton.setAccessKey('L');
 		selButton.setAjaxTarget(ajaxPanel);
 		selButton.setAction(new Action() {
 			@Override
@@ -256,6 +265,7 @@ public class DocumentView extends WSection implements MessageContainer {
 
 		// Select Documents
 		selButton = new WButton("View selected on page");
+		selButton.setAccessKey('V');
 		selButton.setAjaxTarget(ajaxPanel);
 		selButton.setAction(new Action() {
 			@Override
@@ -395,7 +405,7 @@ public class DocumentView extends WSection implements MessageContainer {
 			boolean cached = CACHE.containsKey(selected.getDocumentId());
 			WTabSet.TabMode mode = cached ? WTabSet.TabMode.CLIENT : WTabSet.TabMode.LAZY;
 			if (idx++ == 1) {
-				WLibTab tab = new WLibTab(panel, tabName, mode, '1');
+				WLibTab tab = new WLibTab(panel, tabName, mode, 'D');
 				tabSet.add(tab);
 			} else {
 				WLibTab tab = new WLibTab(panel, tabName, mode);

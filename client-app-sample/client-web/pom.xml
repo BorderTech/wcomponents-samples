@@ -49,11 +49,10 @@
 			<artifactId>junit</artifactId>
 		</dependency>
 
-		<!-- WComponents Library -->
+		<!-- WComponents Addons -->
 		<dependency>
-			<groupId>com.github.bordertech.corpdir</groupId>
-			<artifactId>corpdir-lib-wc</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<groupId>com.github.bordertech.wcomponents</groupId>
+			<artifactId>wcomponents-addons-bundle</artifactId>
 		</dependency>
 
 	</dependencies>

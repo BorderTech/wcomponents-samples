@@ -1,12 +1,12 @@
 package com.sample.client.ui.view.polling;
 
-import com.github.bordertech.taskmanager.service.ResultHolder;
+import com.github.bordertech.taskmaster.service.ResultHolder;
 import com.github.bordertech.wcomponents.Request;
 import com.github.bordertech.wcomponents.WContent;
 import com.github.bordertech.wcomponents.WLink;
 import com.github.bordertech.wcomponents.WPopup;
-import com.github.bordertech.wcomponents.lib.polling.PollingServicePanel;
-import com.github.bordertech.wcomponents.lib.polling.PollingStartType;
+import com.github.bordertech.wcomponents.addons.polling.PollingServicePanel;
+import com.github.bordertech.wcomponents.addons.polling.PollingStartType;
 import com.sample.client.model.DocumentContent;
 import com.sample.client.model.DocumentDetail;
 import com.sample.client.ui.view.DocumentView;
@@ -67,7 +67,7 @@ public class PollingLauncher extends PollingServicePanel<DocumentDetail, Documen
 		// Setup the document details on the Link
 		DocumentContent doc = getServiceResult().getResult();
 		String key = doc.getDocumentId() + "-" + doc.getFilename();
-		content.setContentAccess(new ContentWrapper(doc));
+		content.setContentAccess(new CachedContentWrapper(doc.getFilename(), doc.getMimeType(), doc.getDocumentId()));
 		content.setCacheKey(key);
 		popup.setTargetWindow(key);
 		popup.setVisible(true);

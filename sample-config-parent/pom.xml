@@ -18,7 +18,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- QA Settings -->
 		<wc.qa.skip>true</wc.qa.skip>
-		<wcomponent.version>1.4.12</wcomponent.version>
+		<wcomponent.version>1.4.22</wcomponent.version>
 		<multiproject.basedir>${basedir}</multiproject.basedir>
 	</properties>
 
@@ -81,6 +81,13 @@
 				<groupId>com.github.bordertech.wcomponents</groupId>
 				<artifactId>wcomponents-lde</artifactId>
 				<version>${wcomponent.version}</version>
+			</dependency>
+
+			<!-- WComponents Addons -->
+			<dependency>
+				<groupId>com.github.bordertech.wcomponents</groupId>
+				<artifactId>wcomponents-addons-bundle</artifactId>
+				<version>1.0.2</version>
 			</dependency>
 
 			<dependency>
