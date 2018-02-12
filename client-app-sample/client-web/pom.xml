@@ -48,6 +48,13 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
+
+		<!-- WComponents Addons -->
+		<dependency>
+			<groupId>com.github.bordertech.wcomponents</groupId>
+			<artifactId>wcomponents-addons-bundle</artifactId>
+		</dependency>
+
 	</dependencies>
 
 </project>
