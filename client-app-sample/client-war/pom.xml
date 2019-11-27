@@ -15,10 +15,6 @@
 
 	<packaging>war</packaging>
 
-	<properties>
-		<multiproject.basedir>${basedir}/../..</multiproject.basedir>
-	</properties>
-
 	<build>
 		<!-- Allows project to be run via mvn jetty:run from the web-war directory. -->
 		<plugins>

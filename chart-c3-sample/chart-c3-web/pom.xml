@@ -15,10 +15,6 @@
 
 	<packaging>jar</packaging>
 
-	<properties>
-		<multiproject.basedir>${basedir}/../..</multiproject.basedir>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.github.bordertech.wcomponents</groupId>

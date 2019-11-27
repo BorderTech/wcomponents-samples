@@ -15,18 +15,8 @@
 
 	<packaging>jar</packaging>
 
-	<properties>
-		<multiproject.basedir>${basedir}/../..</multiproject.basedir>
-	</properties>
-
 	<dependencies>
 
-		<!--
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-		</dependency>
-		-->
 		<dependency>
 			<groupId>com.sample</groupId>
 			<artifactId>client-web</artifactId>

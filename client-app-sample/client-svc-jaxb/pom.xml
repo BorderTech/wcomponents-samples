@@ -15,12 +15,17 @@
 
 	<packaging>jar</packaging>
 
-	<properties>
-		<multiproject.basedir>${basedir}/../..</multiproject.basedir>
-	</properties>
-
 	<build>
 		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<failOnError>false</failOnError>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<groupId>org.jvnet.jax-ws-commons</groupId>
 				<artifactId>jaxws-maven-plugin</artifactId>

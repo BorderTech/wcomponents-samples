@@ -2,6 +2,12 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
+	<parent>
+		<groupId>com.github.bordertech.common</groupId>
+		<artifactId>qa-parent</artifactId>
+		<version>1.0.15</version>
+	</parent>
+
 	<name>samples-parent</name>
 
 	<groupId>com.sample</groupId>
@@ -10,8 +16,114 @@
 
 	<packaging>pom</packaging>
 
+	<description>
+		Samples of using WComponents UI Framework.
+	</description>
+
+	<url>https://github.com/bordertech/wcomponents-samples</url>
+
+	<scm>
+		<url>https://github.com/bordertech/wcomponents-samples</url>
+		<connection>scm:git:https://github.com/bordertech/wcomponents-samples.git</connection>
+		<developerConnection>scm:git:https://github.com/bordertech/wcomponents-samples.git</developerConnection>
+		<tag>wcomponents-samples-1.0.0</tag>
+	</scm>
+
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/bordertech/wcomponents-samples/issues</url>
+	</issueManagement>
+
+	<ciManagement>
+		<system>Travis CI</system>
+		<url>https://travis-ci.com/BorderTech/wcomponents-samples</url>
+	</ciManagement>
+
+	<properties>
+		<!-- Disable ALL QA Settings (for the moment) -->
+		<bt.qa.skip>true</bt.qa.skip>
+		<dependency-check.skip>true</dependency-check.skip>
+		<enforcer.fail>false</enforcer.fail>
+		<wcomponent.version>1.4.22</wcomponent.version>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>skipAllTests</id>
+			<activation>
+				<property>
+					<name>skipTests</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<properties>
+				<skipOptionalTests>true</skipOptionalTests>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>openshift</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<configuration>
+							<outputDirectory>target</outputDirectory>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+	</profiles>
+
+
+	<dependencyManagement>
+		<dependencies>
+
+			<dependency>
+				<groupId>com.github.bordertech.wcomponents</groupId>
+				<artifactId>wcomponents-bundle</artifactId>
+				<version>${wcomponent.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.github.bordertech.wcomponents</groupId>
+				<artifactId>wcomponents-test-lib</artifactId>
+				<version>${wcomponent.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.github.bordertech.wcomponents</groupId>
+				<artifactId>wcomponents-lde</artifactId>
+				<version>${wcomponent.version}</version>
+			</dependency>
+
+			<!-- WComponents Addons -->
+			<dependency>
+				<groupId>com.github.bordertech.wcomponents</groupId>
+				<artifactId>wcomponents-addons-bundle</artifactId>
+				<version>1.0.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>servlet-api</artifactId>
+				<version>2.5</version>
+			</dependency>
+
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.12</version>
+				<scope>test</scope>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
 	<modules>
-		<module>sample-config-parent</module>
 		<module>chart-c3-sample</module>
 		<module>client-app-sample</module>
 		<module>fileupload-sample</module>
