@@ -35,6 +35,7 @@ import org.apache.commons.io.IOUtils;
  * @author Jonathan Austin
  * @since 1.0.0
  */
+@SuppressWarnings({"BED_HIERARCHICAL_EXCEPTION_DECLARATION", "PMB_POSSIBLE_MEMORY_BLOAT"})
 public class ClientServicesMockImpl implements ClientServicesHelper {
 
 	private static final Set<IndividualDetail> INDIVIDUALS = new HashSet<>();
@@ -55,7 +56,6 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 	}
 
 	/**
-	 *
 	 * @param idx the suffix
 	 * @return the detail
 	 */
@@ -72,7 +72,6 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 	}
 
 	/**
-	 *
 	 * @param idx the suffix
 	 * @return the detail
 	 */
@@ -87,7 +86,6 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 	}
 
 	/**
-	 *
 	 * @param idx the suffix
 	 * @return the detail
 	 */
@@ -99,7 +97,6 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 	}
 
 	/**
-	 *
 	 * @param idx the suffix
 	 * @return the DOB
 	 */
@@ -111,7 +108,6 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 	}
 
 	/**
-	 *
 	 * @param idx the suffix
 	 * @return the detail
 	 */
@@ -126,12 +122,11 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 	}
 
 	/**
-	 *
 	 * @param detail the detail
 	 * @return the summary
 	 */
 	private static ClientSummary orgToSummary(final OrganisationDetail detail) {
-		ClientSummary summary = new ClientSummary(detail.getClientId(), ClientType.Organisation);
+		ClientSummary summary = new ClientSummary(detail.getClientId(), ClientType.ORGANISATION);
 		if (detail.getAddress() != null) {
 			summary.setAddress(detail.getAddress().toString());
 		}
@@ -140,12 +135,11 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 	}
 
 	/**
-	 *
 	 * @param detail the detail
 	 * @return the summary
 	 */
 	private static ClientSummary indivToSummary(final IndividualDetail detail) {
-		ClientSummary summary = new ClientSummary(detail.getClientId(), ClientType.Individual);
+		ClientSummary summary = new ClientSummary(detail.getClientId(), ClientType.INDIVIDUAL);
 		if (detail.getAddress() != null) {
 			summary.setAddress(detail.getAddress().toString());
 		}
@@ -156,6 +150,9 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 		return summary;
 	}
 
+	/**
+	 * @return the mock documents
+	 */
 	private static Map<String, DocumentDetail> createDocuments() {
 		// Build mock list of document details
 		Map<String, DocumentDetail> docs = new HashMap<>();
@@ -200,9 +197,6 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 		return dt.getTime();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<ClientSummary> searchClients(final String search) throws ServiceException {
 
@@ -227,9 +221,6 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 		return clients;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<CodeOption> retrieveCodes(final String table) throws ServiceException {
 		List<CodeOption> options = new ArrayList<>();
@@ -250,9 +241,6 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 		return options;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public IndividualDetail retrieveIndividual(final String clientId) throws ServiceException, ClientNotFoundException {
 		for (IndividualDetail detail : INDIVIDUALS) {
@@ -263,9 +251,6 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 		throw new ClientNotFoundException();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String createIndividual(final IndividualDetail detail) throws ServiceException {
 		if ("error".equals(detail.getFirstName())) {
@@ -278,9 +263,6 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 		return id;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void updateIndividual(final IndividualDetail detail) throws ServiceException {
 		if ("error".equals(detail.getFirstName())) {
@@ -289,9 +271,6 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 		INDIVIDUALS.add(detail);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public OrganisationDetail retrieveOrganisation(final String clientId) throws ServiceException, ClientNotFoundException {
 		for (OrganisationDetail detail : ORGANISATIONS) {
@@ -302,9 +281,6 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 		throw new ClientNotFoundException();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String createOrganisation(final OrganisationDetail detail) throws ServiceException {
 		if ("error".equals(detail.getName())) {
@@ -317,9 +293,6 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 		return id;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void updateOrganisation(final OrganisationDetail detail) throws ServiceException {
 		if ("error".equals(detail.getName())) {
@@ -328,9 +301,6 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 		ORGANISATIONS.add(detail);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public BigDecimal retrieveConversionRate(final String fromCode, final String toCode) {
 		if (Objects.equals(fromCode, "USD")) {
@@ -367,9 +337,6 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 		return content;
 	}
 
-	/**
-	 * @return the bytes from the resource
-	 */
 	private byte[] getDocumentBytes(final DocumentDetail doc) throws ServiceException {
 		try (InputStream stream = getClass().getResourceAsStream(doc.getResourcePath())) {
 			return IOUtils.toByteArray(stream);

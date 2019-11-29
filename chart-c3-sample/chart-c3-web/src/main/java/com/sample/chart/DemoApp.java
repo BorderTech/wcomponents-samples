@@ -14,6 +14,7 @@ import com.github.bordertech.wcomponents.WHeading;
 import com.github.bordertech.wcomponents.WPanel;
 import com.github.bordertech.wcomponents.WTemplate;
 import com.github.bordertech.wcomponents.template.TemplateRendererFactory;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -72,9 +73,6 @@ public class DemoApp extends WApplication {
 		add(new WAjaxControl(drpType, chartPanel));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void preparePaintComponent(final Request request) {
 		super.preparePaintComponent(request);
@@ -109,7 +107,7 @@ public class DemoApp extends WApplication {
 	/**
 	 * Provides JSON as the content.
 	 */
-	public static abstract class JsonContentAccess implements ContentAccess {
+	public abstract static class JsonContentAccess implements ContentAccess {
 
 		/**
 		 * @return the JSON string as array of bytes
@@ -117,7 +115,7 @@ public class DemoApp extends WApplication {
 		@Override
 		public byte[] getBytes() {
 			String json = getJson();
-			return json == null ? null : json.getBytes();
+			return json == null ? null : json.getBytes(StandardCharsets.UTF_8);
 		}
 
 		/**

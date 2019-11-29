@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- *
- * @author Jonathan Austin
- * @since 1.0.0
+ * Client summary.
  */
 public class ClientSummary implements Serializable {
 
@@ -18,40 +16,71 @@ public class ClientSummary implements Serializable {
 	private String address;
 	private List<PassportDetail> identifications;
 
+	/**
+	 * @param clientId the client ID
+	 * @param type the client type
+	 */
 	public ClientSummary(final String clientId, final ClientType type) {
 		this.clientId = clientId;
 		this.type = type;
 		this.identifications = new ArrayList<>();
 	}
 
+	/**
+	 * @return the client id
+	 */
 	public String getClientId() {
 		return clientId;
 	}
 
+	/**
+	 * @return the client type
+	 */
 	public ClientType getType() {
 		return type;
 	}
 
+	/**
+	 * @return the client name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * @param name the client name
+	 */
 	public void setName(final String name) {
 		this.name = name;
 	}
 
+	/**
+	 * @return the client address
+	 */
 	public String getAddress() {
 		return address;
 	}
 
+	/**
+	 * @param address the client address
+	 */
 	public void setAddress(final String address) {
 		this.address = address;
 	}
 
+	/**
+	 * @return the client identifications
+	 */
 	public List<PassportDetail> getIdentifications() {
+		if (identifications == null) {
+			identifications = new ArrayList<>();
+		}
 		return identifications;
 	}
 
+	/**
+	 * @param identifications the client identifications
+	 */
 	public void setIdentifications(final List<PassportDetail> identifications) {
 		this.identifications = identifications;
 	}
@@ -65,7 +94,7 @@ public class ClientSummary implements Serializable {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}

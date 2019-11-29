@@ -1,10 +1,9 @@
 package com.sample.client.ui.view;
 
-import com.github.bordertech.didums.Didums;
 import com.github.bordertech.taskmaster.service.ResultHolder;
 import com.github.bordertech.taskmaster.service.ServiceAction;
-import com.github.bordertech.taskmaster.service.ServiceException;
 import com.github.bordertech.taskmaster.service.ServiceHelper;
+import com.github.bordertech.taskmaster.service.util.ServiceCacheUtil;
 import com.github.bordertech.wcomponents.Action;
 import com.github.bordertech.wcomponents.ActionEvent;
 import com.github.bordertech.wcomponents.Margin;
@@ -33,6 +32,7 @@ import com.github.bordertech.wcomponents.layout.ColumnLayout;
 import com.sample.client.model.DocumentContent;
 import com.sample.client.model.DocumentDetail;
 import com.sample.client.services.ClientServicesHelper;
+import com.sample.client.services.exception.ServiceException;
 import com.sample.client.ui.application.ClientApp;
 import com.sample.client.ui.common.ClientWMessages;
 import com.sample.client.ui.common.Constants;
@@ -54,13 +54,17 @@ import javax.cache.Cache;
  */
 public class DocumentView extends WSection implements MessageContainer {
 
-	private static final ServiceHelper SERVICE_HELPER = Didums.getService(ServiceHelper.class);
+	/**
+	 * Document cache.
+	 */
+	public static final Cache<String, ResultHolder> CACHE = ServiceCacheUtil.getResultHolderCache("sample-docs-cache");
 
-	public static final Cache<String, ResultHolder> CACHE = SERVICE_HELPER.getResultHolderCache("sample-docs-cache");
-
+	/**
+	 * Retrieve documents action.
+	 */
 	public static final ServiceAction<DocumentDetail, DocumentContent> RETREIVE_DOC_ACTION = new ServiceAction<DocumentDetail, DocumentContent>() {
 		@Override
-		public DocumentContent service(final DocumentDetail document) {
+		public DocumentContent service(final DocumentDetail document) throws Exception {
 			try {
 				return CLIENT_SERVICES.retrieveDocument(document.getDocumentId());
 			} catch (Exception e) {
@@ -87,11 +91,28 @@ public class DocumentView extends WSection implements MessageContainer {
 
 	private final WTable table = new WTable();
 
+	/**
+	 * View types.
+	 */
 	public enum ViewType {
+		/**
+		 * Tab view.
+		 */
 		TAB("icons/ui-tab-content-vertical-icon.png", "tabs view ", 'T'),
+		/**
+		 * Column view.
+		 */
 		COL("icons/ui-split-panel-vertical-icon.png", "column view", 'C'),
+		/**
+		 * Split view.
+		 */
 		SPLIT("icons/ui-split-panel-icon.png", "split view", 'S');
 
+		/**
+		 * @param url the view URL
+		 * @param desc the view description
+		 * @param accessKey the access key
+		 */
 		ViewType(final String url, final String desc, final char accessKey) {
 			this.url = url;
 			this.desc = desc;
@@ -309,7 +330,7 @@ public class DocumentView extends WSection implements MessageContainer {
 	}
 
 	/**
-	 * Clear the Cache
+	 * Clear the Cache.
 	 */
 	protected void doHandleClearCache() {
 		for (DocumentDetail doc : getDocuments()) {
@@ -438,7 +459,11 @@ public class DocumentView extends WSection implements MessageContainer {
 		if (load > -1 && load < docs.size()) {
 			DocumentDetail doc = docs.get(load);
 			// Retrieve Document (Will only start if it is not in the cache)
-			SERVICE_HELPER.handleAsyncServiceCall(CACHE, doc.getDocumentId(), doc, RETREIVE_DOC_ACTION);
+			try {
+				ServiceHelper.submitAsync(doc, RETREIVE_DOC_ACTION, CACHE, doc.getDocumentId());
+			} catch (Exception e) {
+				// Print to LOG. Could not pre load
+			}
 		}
 	}
 

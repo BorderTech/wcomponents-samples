@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
  * Abstract view.
  *
  * @author Jonathan Austin
+ * @param <T> the bound bean type
  * @since 1.0.0
  */
 public abstract class AbstractView<T> extends WSection implements MessageContainer {
@@ -48,7 +49,7 @@ public abstract class AbstractView<T> extends WSection implements MessageContain
 
 	/**
 	 * @param title the view title
-	 * @param app the client app.
+	 * @param app the client app
 	 */
 	public AbstractView(final String title, final ClientApp app) {
 		super(title);
@@ -59,11 +60,6 @@ public abstract class AbstractView<T> extends WSection implements MessageContain
 		// Messages
 		content.add(messages);
 	}
-
-	/**
-	 * Setup the view content.
-	 */
-	protected abstract void setupContent();
 
 	/**
 	 * @param detail the bean to be displayed
@@ -81,7 +77,7 @@ public abstract class AbstractView<T> extends WSection implements MessageContain
 
 	public void setViewMode(final ViewMode viewMode) {
 		getOrCreateComponentModel().viewMode = viewMode;
-		if (viewMode == ViewMode.Readonly) {
+		if (viewMode == ViewMode.READONLY) {
 			doMakeReadOnly(getContent());
 		}
 	}
@@ -103,9 +99,9 @@ public abstract class AbstractView<T> extends WSection implements MessageContain
 	}
 
 	/**
-	 * Setup the action buttons
+	 * Setup the action buttons.
 	 */
-	protected void setupButtons() {
+	protected final void setupButtons() {
 
 		WPanel content = getContent();
 		WPanel panel = new WPanel(WPanel.Type.FEATURE);
@@ -123,13 +119,13 @@ public abstract class AbstractView<T> extends WSection implements MessageContain
 		WButton cancelButton = new WButton("Cancel") {
 			@Override
 			public boolean isVisible() {
-				return getViewMode() == ViewMode.Create || getViewMode() == ViewMode.Update;
+				return getViewMode() == ViewMode.CREATE || getViewMode() == ViewMode.UPDATE;
 			}
 		};
 		cancelButton.setCancel(true);
 		cancelButton.setAction(new Action() {
 			@Override
-			public void execute(ActionEvent event) {
+			public void execute(final ActionEvent event) {
 				getApp().showSearch();
 			}
 		});
@@ -139,12 +135,12 @@ public abstract class AbstractView<T> extends WSection implements MessageContain
 		WButton backButton = new WButton("Back") {
 			@Override
 			public boolean isVisible() {
-				return getViewMode() == ViewMode.Readonly;
+				return getViewMode() == ViewMode.READONLY;
 			}
 		};
 		backButton.setAction(new Action() {
 			@Override
-			public void execute(ActionEvent event) {
+			public void execute(final ActionEvent event) {
 				getApp().showSearch();
 			}
 		});
@@ -154,12 +150,12 @@ public abstract class AbstractView<T> extends WSection implements MessageContain
 		WButton saveButton = new WButton() {
 			@Override
 			public boolean isVisible() {
-				return getViewMode() == ViewMode.Create || getViewMode() == ViewMode.Update;
+				return getViewMode() == ViewMode.CREATE || getViewMode() == ViewMode.UPDATE;
 			}
 
 			@Override
 			public String getText() {
-				return getViewMode() == ViewMode.Create ? "Create" : "Update";
+				return getViewMode() == ViewMode.CREATE ? "Create" : "Update";
 			}
 		};
 		saveButton.setAction(new ValidatingAction(getMessages().getValidationErrors(), content) {
@@ -178,7 +174,7 @@ public abstract class AbstractView<T> extends WSection implements MessageContain
 		doUpdateDetailBean();
 		T bean = getDetail();
 		try {
-			if (getViewMode() == ViewMode.Create) {
+			if (getViewMode() == ViewMode.CREATE) {
 				doCreateServiceCall(bean);
 				getApp().showSearch();
 			} else {
@@ -203,9 +199,6 @@ public abstract class AbstractView<T> extends WSection implements MessageContain
 
 	protected abstract ClientSummary getSummary(final T bean);
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public WMessages getMessages() {
 		return messages;
@@ -224,17 +217,11 @@ public abstract class AbstractView<T> extends WSection implements MessageContain
 		return new ViewModel();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected ViewModel getComponentModel() {
 		return (ViewModel) super.getComponentModel();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected ViewModel getOrCreateComponentModel() {
 		return (ViewModel) super.getOrCreateComponentModel();

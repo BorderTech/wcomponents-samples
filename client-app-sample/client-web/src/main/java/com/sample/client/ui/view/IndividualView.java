@@ -26,7 +26,6 @@ import com.sample.client.ui.common.ViewMode;
 import com.sample.client.ui.common.WTextCountryCodeDesc;
 import com.sample.client.ui.common.WTextPassportNumber;
 import com.sample.client.ui.util.ClientServicesHelperFactory;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -55,8 +54,7 @@ public class IndividualView extends AbstractView<IndividualDetail> {
 		setupButtons();
 	}
 
-	@Override
-	protected void setupContent() {
+	private void setupContent() {
 		setupNameDetails();
 		setupPassportDetails();
 		setupAddressDetails();
@@ -107,7 +105,7 @@ public class IndividualView extends AbstractView<IndividualDetail> {
 		WTable table = new WTable() {
 			@Override
 			public boolean isVisible() {
-				return getViewMode() != ViewMode.Create;
+				return getViewMode() != ViewMode.CREATE;
 			}
 		};
 		content.add(table);
@@ -125,7 +123,7 @@ public class IndividualView extends AbstractView<IndividualDetail> {
 		WFieldLayout layout = new WFieldLayout(WFieldLayout.LAYOUT_FLAT) {
 			@Override
 			public boolean isVisible() {
-				return getViewMode() != ViewMode.Readonly;
+				return getViewMode() != ViewMode.READONLY;
 			}
 
 			@Override
@@ -174,14 +172,15 @@ public class IndividualView extends AbstractView<IndividualDetail> {
 			passport.setPassportNumber(txtPassportNumber.getValue());
 			switch (getViewMode()) {
 
-				case Create:
-					getDetail().setIdentifications(Arrays.asList(passport));
+				case CREATE:
+					getDetail().getIdentifications().add(passport);
 					break;
 
-				case Update:
+				case UPDATE:
 					if (!getDetail().getIdentifications().contains(passport)) {
 						getDetail().getIdentifications().add(passport);
 					}
+					break;
 			}
 
 		}
@@ -202,7 +201,7 @@ public class IndividualView extends AbstractView<IndividualDetail> {
 	@Override
 	protected ClientSummary getSummary(final IndividualDetail bean) {
 
-		ClientSummary summary = new ClientSummary(bean.getClientId(), ClientType.Individual);
+		ClientSummary summary = new ClientSummary(bean.getClientId(), ClientType.INDIVIDUAL);
 		summary.setAddress(bean.getAddress().toString());
 		summary.setIdentifications(bean.getIdentifications());
 		summary.setName(bean.getFirstName() + " " + bean.getLastName());

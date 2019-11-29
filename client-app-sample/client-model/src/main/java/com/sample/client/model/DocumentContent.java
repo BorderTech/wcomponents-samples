@@ -4,20 +4,21 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Document content.
- *
- * @author jonathan
+ * Document content details.
  */
 public class DocumentContent implements Serializable {
 
 	private final String documentId;
-
 	private final byte[] bytes;
-
 	private final String filename;
-
 	private final String mimeType;
 
+	/**
+	 * @param documentId the document id
+	 * @param bytes the document content
+	 * @param filename the document file name
+	 * @param mimeType the content mime type
+	 */
 	public DocumentContent(final String documentId, final byte[] bytes, final String filename, final String mimeType) {
 		this.documentId = documentId;
 		this.bytes = bytes;
@@ -25,18 +26,30 @@ public class DocumentContent implements Serializable {
 		this.mimeType = mimeType;
 	}
 
+	/**
+	 * @return the document id
+	 */
 	public String getDocumentId() {
 		return documentId;
 	}
 
+	/**
+	 * @return the document content
+	 */
 	public byte[] getBytes() {
 		return bytes;
 	}
 
+	/**
+	 * @return the document file name
+	 */
 	public String getFilename() {
 		return filename;
 	}
 
+	/**
+	 * @return the content mime type
+	 */
 	public String getMimeType() {
 		return mimeType;
 	}
@@ -49,7 +62,7 @@ public class DocumentContent implements Serializable {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}

@@ -6,12 +6,33 @@ package com.sample.client.model;
  * @since 1.0.0
  */
 public enum StateType {
+	/**
+	 * ACT State.
+	 */
 	ACT,
+	/**
+	 * NSW State.
+	 */
 	NSW,
+	/**
+	 * NT State.
+	 */
 	NT,
+	/**
+	 * QLD State.
+	 */
 	QLD,
+	/**
+	 * TAS State.
+	 */
 	TAS,
+	/**
+	 * VIC State.
+	 */
 	VIC,
+	/**
+	 * WA State.
+	 */
 	WA;
 
 	@Override

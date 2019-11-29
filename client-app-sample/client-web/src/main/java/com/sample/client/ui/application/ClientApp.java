@@ -106,76 +106,99 @@ public class ClientApp extends WApplication implements MessageContainer {
 		super.preparePaintComponent(request);
 	}
 
+	/**
+	 * Show currency view.
+	 */
 	public void showCurrency() {
 		vwCurrency.reset();
 		mgr.makeVisible(vwCurrency);
 	}
 
+	/**
+	 * Show documents view.
+	 */
 	public void showDocuments() {
 		vwDocuments.reset();
 		mgr.makeVisible(vwDocuments);
 	}
 
+	/**
+	 * Show search view.
+	 */
 	public void showSearch() {
 		mgr.makeVisible(vwSearch);
 	}
 
+	/**
+	 * Show search view and apply updates.
+	 *
+	 * @param summary the updated client details
+	 */
 	public void showSearchWithUpdate(final ClientSummary summary) {
 		vwSearch.refreshClientSummary(summary);
 		showSearch();
 	}
 
+	/**
+	 * Show organisation view.
+	 *
+	 * @param detail the organisation details
+	 * @param update true if allow update
+	 */
 	public void viewOrganisation(final OrganisationDetail detail, final boolean update) {
 		vwOrganisation.reset();
-		vwOrganisation.setViewMode(update ? ViewMode.Update : ViewMode.Readonly);
+		vwOrganisation.setViewMode(update ? ViewMode.UPDATE : ViewMode.READONLY);
 		vwOrganisation.setDetail(detail);
 		mgr.makeVisible(vwOrganisation);
 	}
 
+	/**
+	 * Show create organisation view.
+	 */
 	public void createOrganisation() {
 		OrganisationDetail detail = new OrganisationDetail();
 		detail.setAddress(new AddressDetail());
 		vwOrganisation.reset();
-		vwOrganisation.setViewMode(ViewMode.Create);
+		vwOrganisation.setViewMode(ViewMode.CREATE);
 		vwOrganisation.setDetail(detail);
 		mgr.makeVisible(vwOrganisation);
 	}
 
+	/**
+	 * Show individual view.
+	 *
+	 * @param detail the individual details
+	 * @param update true if allow update
+	 */
 	public void viewIndividual(final IndividualDetail detail, final boolean update) {
 		vwIndividual.reset();
-		vwIndividual.setViewMode(update ? ViewMode.Update : ViewMode.Readonly);
-		vwIndividual.setDetail(detail);
-		mgr.makeVisible(vwIndividual);
-	}
-
-	public void createIndividiual() {
-		IndividualDetail detail = new IndividualDetail();
-		detail.setAddress(new AddressDetail());
-		vwIndividual.reset();
-		vwIndividual.setViewMode(ViewMode.Create);
+		vwIndividual.setViewMode(update ? ViewMode.UPDATE : ViewMode.READONLY);
 		vwIndividual.setDetail(detail);
 		mgr.makeVisible(vwIndividual);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Show create individual view.
 	 */
+	public void createIndividiual() {
+		IndividualDetail detail = new IndividualDetail();
+		detail.setAddress(new AddressDetail());
+		vwIndividual.reset();
+		vwIndividual.setViewMode(ViewMode.CREATE);
+		vwIndividual.setDetail(detail);
+		mgr.makeVisible(vwIndividual);
+	}
+
 	@Override
 	public String getTitle() {
 		return "Client App - " + getCurrentTitle();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public WMessages getMessages() {
 		return messages;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void handleStepError() {
 		super.handleStepError();

@@ -1,14 +1,14 @@
 package com.sample.client.services;
 
-import com.sample.client.services.exception.ServiceException;
-import com.sample.client.services.exception.DocumentNotFoundException;
-import com.sample.client.services.exception.ClientNotFoundException;
 import com.sample.client.model.ClientSummary;
 import com.sample.client.model.CodeOption;
 import com.sample.client.model.DocumentContent;
 import com.sample.client.model.DocumentDetail;
 import com.sample.client.model.IndividualDetail;
 import com.sample.client.model.OrganisationDetail;
+import com.sample.client.services.exception.ClientNotFoundException;
+import com.sample.client.services.exception.DocumentNotFoundException;
+import com.sample.client.services.exception.ServiceException;
 import java.math.BigDecimal;
 import java.util.List;
 

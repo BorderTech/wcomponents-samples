@@ -4,24 +4,32 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- *
- * @author Jonathan Austin
- * @since 1.0.0
+ * Option with code and description.
  */
 public class CodeOption implements Serializable {
 
 	private final String code;
 	private final String description;
 
+	/**
+	 * @param code the option code
+	 * @param description the option description
+	 */
 	public CodeOption(final String code, final String description) {
 		this.code = code;
 		this.description = description;
 	}
 
+	/**
+	 * @return the option code
+	 */
 	public String getCode() {
 		return code;
 	}
 
+	/**
+	 * @return the option description
+	 */
 	public String getDescription() {
 		return description;
 	}

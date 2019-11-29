@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * Address details panel.
  *
  * @author Jonathan Austin
  * @since 1.0.0
@@ -66,7 +67,7 @@ public class AddressPanel extends WPanel {
 
 			@Override
 			protected Object doHandleInvalidOption(final Object invalidOption) {
-				WMessages.getInstance(this).info("Address country [" + invalidOption.toString() + "] is no longer valid.");
+				WMessages.getInstance(this).info("Address country [" + invalidOption + "] is no longer valid.");
 				return null;
 			}
 		};

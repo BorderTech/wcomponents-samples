@@ -41,10 +41,10 @@
 
 	<properties>
 		<!-- Disable ALL QA Settings (for the moment) -->
-		<bt.qa.skip>true</bt.qa.skip>
+		<bt.qa.skip>false</bt.qa.skip>
 		<dependency-check.skip>true</dependency-check.skip>
 		<enforcer.fail>false</enforcer.fail>
-		<wcomponent.version>1.4.22</wcomponent.version>
+		<wcomponent.version>1.5.14</wcomponent.version>
 	</properties>
 
 	<profiles>
@@ -104,7 +104,19 @@
 			<dependency>
 				<groupId>com.github.bordertech.wcomponents</groupId>
 				<artifactId>wcomponents-addons-bundle</artifactId>
-				<version>1.0.2</version>
+				<version>1.0.6-beta-1</version>
+			</dependency>
+			<!-- Didiums -->
+			<dependency>
+				<groupId>com.github.bordertech.didums</groupId>
+				<artifactId>didums-core</artifactId>
+				<version>1.0.4</version>
+			</dependency>
+			<!-- Taskmaster -->
+			<dependency>
+				<groupId>com.github.bordertech.taskmaster</groupId>
+				<artifactId>taskmaster-service-helper</artifactId>
+				<version>2.0.0-beta-1</version>
 			</dependency>
 
 			<dependency>

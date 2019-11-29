@@ -607,7 +607,7 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 			// Save the future
 			setFuture(future);
 		} catch (Exception e) {
-			throw new PollingServiceException("Could not start thread to call service. " + e.getMessage());
+			throw new PollingServiceException("Could not start thread to call service. " + e.getMessage(), e);
 		}
 	}
 
@@ -683,6 +683,8 @@ public abstract class AbstractPollingPanel<T, R> extends WPanel {
 
 	/**
 	 * This model holds the state information.
+	 *
+	 * @param <R> the record id type
 	 */
 	public static class PollingPanelModel<R> extends PanelModel {
 

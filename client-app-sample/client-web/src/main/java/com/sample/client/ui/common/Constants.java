@@ -18,10 +18,19 @@ public final class Constants {
 		// Do nothing
 	}
 
+	/**
+	 * Country table details.
+	 */
 	public static final LookupTableImpl.TableDetails COUNTRY_TABLE = new LookupTableImpl.TableDetails("country");
 
+	/**
+	 * Country table with a null option details.
+	 */
 	public static final LookupTableImpl.TableDetails COUNTRY_TABLE_WITH_NULL = new LookupTableImpl.TableDetails("country", true);
 
+	/**
+	 * Currency table with a null option details.
+	 */
 	public static final LookupTableImpl.TableDetails CURRENCY_TABLE_WITH_NULL = new LookupTableImpl.TableDetails("currency", true);
 
 	/**

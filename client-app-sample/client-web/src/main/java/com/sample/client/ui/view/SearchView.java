@@ -129,6 +129,7 @@ public class SearchView extends WSection implements MessageContainer {
 				app.createIndividiual();
 			}
 		});
+		item.setCancel(true);
 		subMenu.add(item);
 
 		item = new WMenuItem("Organisation");
@@ -138,6 +139,7 @@ public class SearchView extends WSection implements MessageContainer {
 				app.createOrganisation();
 			}
 		});
+		item.setCancel(true);
 		subMenu.add(item);
 
 		// Reset
@@ -149,6 +151,7 @@ public class SearchView extends WSection implements MessageContainer {
 				doReset();
 			}
 		});
+		item.setCancel(true);
 		menu.add(item);
 
 		// Currency
@@ -159,6 +162,7 @@ public class SearchView extends WSection implements MessageContainer {
 				app.showCurrency();
 			}
 		});
+		item.setCancel(true);
 		menu.add(item);
 
 		// Documents
@@ -169,6 +173,7 @@ public class SearchView extends WSection implements MessageContainer {
 				app.showDocuments();
 			}
 		});
+		item.setCancel(true);
 		menu.add(item);
 
 	}
@@ -186,10 +191,10 @@ public class SearchView extends WSection implements MessageContainer {
 			public void execute(final ActionEvent event) {
 				ClientSummary client = (ClientSummary) viewClient.getBeanValue();
 				switch (client.getType()) {
-					case Individual:
+					case INDIVIDUAL:
 						doHandleIndividual(client.getClientId(), false);
 						break;
-					case Organisation:
+					case ORGANISATION:
 						doHandleOrganisation(client.getClientId(), false);
 						break;
 				}
@@ -206,10 +211,10 @@ public class SearchView extends WSection implements MessageContainer {
 			public void execute(final ActionEvent event) {
 				ClientSummary client = (ClientSummary) viewClient.getBeanValue();
 				switch (client.getType()) {
-					case Individual:
+					case INDIVIDUAL:
 						doHandleIndividual(client.getClientId(), true);
 						break;
-					case Organisation:
+					case ORGANISATION:
 						doHandleOrganisation(client.getClientId(), true);
 						break;
 				}
@@ -302,9 +307,6 @@ public class SearchView extends WSection implements MessageContainer {
 
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public WMessages getMessages() {
 		return messages;

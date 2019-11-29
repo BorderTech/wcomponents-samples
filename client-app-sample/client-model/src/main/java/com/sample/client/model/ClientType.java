@@ -1,11 +1,15 @@
 package com.sample.client.model;
 
 /**
- *
- * @author Jonathan Austin
- * @since 1.0.0
+ * Client type.
  */
 public enum ClientType {
-	Individual,
-	Organisation
+	/**
+	 * Individual client.
+	 */
+	INDIVIDUAL,
+	/**
+	 * Organisation client.
+	 */
+	ORGANISATION
 }

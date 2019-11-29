@@ -28,9 +28,6 @@ public class WTextCountryCodeDesc extends WText {
 		setBeanProperty("countryCode");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void preparePaintComponent(final Request request) {
 		super.preparePaintComponent(request);

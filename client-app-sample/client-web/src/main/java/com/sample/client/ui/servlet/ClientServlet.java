@@ -11,9 +11,6 @@ import com.sample.client.ui.application.ClientApp;
  */
 public class ClientServlet extends WServlet {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public WComponent getUI(final Object httpServletRequest) {
 		return UIRegistry.getInstance().getUI(ClientApp.class.getName());

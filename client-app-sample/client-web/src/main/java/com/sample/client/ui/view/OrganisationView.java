@@ -39,8 +39,7 @@ public class OrganisationView extends AbstractView<OrganisationDetail> {
 		setupButtons();
 	}
 
-	@Override
-	protected void setupContent() {
+	private void setupContent() {
 
 		WPanel content = getContent();
 
@@ -90,7 +89,7 @@ public class OrganisationView extends AbstractView<OrganisationDetail> {
 	@Override
 	protected ClientSummary getSummary(final OrganisationDetail bean) {
 
-		ClientSummary summary = new ClientSummary(bean.getClientId(), ClientType.Organisation);
+		ClientSummary summary = new ClientSummary(bean.getClientId(), ClientType.ORGANISATION);
 		summary.setAddress(bean.getAddress().toString());
 		summary.setName(bean.getName());
 

@@ -7,12 +7,13 @@ import com.github.bordertech.wcomponents.lde.PlainLauncher;
  *
  * @author Jonathan Austin
  */
-public class DemoLauncherProxy {
+@SuppressWarnings("HideUtilityClassConstructor")
+public final class DemoLauncherProxy {
 
 	/**
 	 * An instance of the launcher.
 	 */
-	private static PlainLauncher LAUNCHER;
+	private static PlainLauncher launcher;
 
 	/**
 	 * The entry point when the launcher is run as a java application.
@@ -21,8 +22,8 @@ public class DemoLauncherProxy {
 	 * @throws Exception on error
 	 */
 	public static void main(final String[] args) throws Exception {
-		LAUNCHER = new PlainLauncher();
-		LAUNCHER.run();
+		launcher = new PlainLauncher();
+		launcher.run();
 	}
 
 	/**
@@ -31,8 +32,8 @@ public class DemoLauncherProxy {
 	 * @throws InterruptedException on error
 	 */
 	public static void stopLauncher() throws InterruptedException {
-		if (LAUNCHER != null) {
-			LAUNCHER.stop();
+		if (launcher != null) {
+			launcher.stop();
 		}
 	}
 

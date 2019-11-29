@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+
+	<!-- Look at changing pattern of passing THIS from contructor in views -->
+	<Match>
+		<Bug pattern="FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY" />
+	</Match>
+
+</FindBugsFilter>

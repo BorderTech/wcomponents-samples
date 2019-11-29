@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+
+	<!-- False Positives -->
+	<Match>
+		<Bug pattern="PMB_POSSIBLE_MEMORY_BLOAT" />
+	</Match>
+	<Match>
+		<Bug pattern="BED_HIERARCHICAL_EXCEPTION_DECLARATION" />
+	</Match>
+
+</FindBugsFilter>

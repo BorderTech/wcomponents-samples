@@ -6,7 +6,16 @@ package com.sample.client.ui.common;
  * @since 1.0.0
  */
 public enum ViewMode {
-	Readonly,
-	Update,
-	Create
+	/**
+	 * Readonly mode.
+	 */
+	READONLY,
+	/**
+	 * Update mode.
+	 */
+	UPDATE,
+	/**
+	 * Create mode.
+	 */
+	CREATE
 }

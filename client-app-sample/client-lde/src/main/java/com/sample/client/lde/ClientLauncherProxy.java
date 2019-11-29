@@ -8,7 +8,8 @@ import com.github.bordertech.wcomponents.lde.PlainLauncher;
  * @author Jonathan Austin
  * @since 1.0.0
  */
-public class ClientLauncherProxy {
+@SuppressWarnings("HideUtilityClassConstructor")
+public final class ClientLauncherProxy {
 
 	/**
 	 * An instance of the launcher.

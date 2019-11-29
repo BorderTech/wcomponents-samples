@@ -1,7 +1,8 @@
 package com.sample.client.ui.util;
 
-import com.github.bordertech.wcomponents.util.Factory;
+import com.github.bordertech.didums.Didums;
 import com.sample.client.services.ClientServicesHelper;
+import com.sample.client.services.ClientServicesMockImpl;
 import java.io.Serializable;
 
 /**
@@ -10,17 +11,12 @@ import java.io.Serializable;
  * @author Jonathan Austin
  * @since 1.0.0
  */
-public class ClientServicesHelperFactory implements Serializable {
-
-	/**
-	 * Default serialisation identifier.
-	 */
-	private static final long serialVersionUID = 1L;
+public final class ClientServicesHelperFactory implements Serializable {
 
 	/**
 	 * Singleton instance.
 	 */
-	private static final ClientServicesHelper INSTANCE = (ClientServicesHelper) Factory.newInstance(ClientServicesHelper.class);
+	private static final ClientServicesHelper INSTANCE = Didums.getService(ClientServicesHelper.class, ClientServicesMockImpl.class);
 
 	/**
 	 * Don't allow external instantiation of this class.

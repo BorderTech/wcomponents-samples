@@ -26,18 +26,12 @@ public class ClientWMessages extends WMessages {
 		setMargin(new Margin(0, 0, Constants.GAP_LARGE, 0));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isVisible() {
 		// Always visible
 		return true;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isHidden() {
 		// Hide the panel when there are no messages so AJAX spinner is not seen

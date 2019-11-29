@@ -187,9 +187,6 @@ public class CurrencyView extends WSection implements MessageContainer {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public WMessages getMessages() {
 		return messages;
