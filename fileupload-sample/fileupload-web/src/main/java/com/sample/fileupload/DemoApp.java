@@ -27,9 +27,8 @@ import com.github.bordertech.wcomponents.layout.ColumnLayout;
 import com.github.bordertech.wcomponents.util.HtmlClassProperties;
 import com.github.bordertech.wcomponents.validation.Diagnostic;
 import com.github.bordertech.wcomponents.validation.ValidatingAction;
+import com.sample.fileupload.validating.ValidatingPollingPanel;
 import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -61,11 +60,11 @@ public class DemoApp extends WApplication {
 			if (isNewUpload()) {
 				int idx = getFiles().size() - 1;
 				FileWidgetUpload upload = getFiles().get(idx);
-				ValidatingServicePanel panel = new ValidatingServicePanel();
+				ValidatingPollingPanel panel = new ValidatingPollingPanel();
 				validatingContainer.add(panel);
-				panel.setRecordId(upload);
+				panel.setServiceCriteria(upload);
 				panel.setPollingText(" Validating file [" + upload.getFile().getFileName() + "].");
-				panel.doStartLoading();
+				panel.doManualStart();
 			}
 		}
 	};
@@ -260,8 +259,8 @@ public class DemoApp extends WApplication {
 		}
 		List<FileWidgetUpload> files = widget.getFiles();
 		for (int i = validatingContainer.getChildCount(); i > 0; i--) {
-			ValidatingServicePanel panel = (ValidatingServicePanel) validatingContainer.getChildAt(i - 1);
-			if (!files.contains(panel.getRecordId())) {
+			ValidatingPollingPanel panel = (ValidatingPollingPanel) validatingContainer.getChildAt(i - 1);
+			if (!files.contains(panel.getServiceCriteria())) {
 				validatingContainer.remove(panel);
 			}
 		}
@@ -272,117 +271,12 @@ public class DemoApp extends WApplication {
 	 */
 	private boolean checkAllValid() {
 		for (WComponent panel : validatingContainer.getChildren()) {
-			ValidatingServicePanel validating = (ValidatingServicePanel) panel;
+			ValidatingPollingPanel validating = (ValidatingPollingPanel) panel;
 			if (!validating.isValidFile()) {
 				return false;
 			}
 		}
 		return true;
-	}
-
-	/**
-	 * Polling service that validates the file.
-	 */
-	public static class ValidatingServicePanel extends AbstractPollingPanel<ValidatingResult, FileWidgetUpload> {
-
-		private final WMessages messages = new WMessages(true);
-
-		/**
-		 * Construct the panel.
-		 */
-		public ValidatingServicePanel() {
-			super(null, 267, true);
-
-			getContent().add(messages);
-			getStartButton().setVisible(false);
-			setMargin(new Margin(0, 0, 6, 0));
-		}
-
-		/**
-		 * @return true if file is valid
-		 */
-		public boolean isValidFile() {
-			return getPanelStatus() == PanelStatus.COMPLETE && messages.getErrorMessages().isEmpty();
-		}
-
-		/**
-		 * Setup the messages for validating the file.
-		 *
-		 * @param response the service response
-		 */
-		@Override
-		protected void handleSuccessfulServiceResponse(final ValidatingResult response) {
-			FileWidgetUpload file = getRecordId();
-			if (response.getMessages().isEmpty()) {
-				messages.info("File [" + file.getFile().getFileName() + "] is valid");
-			} else {
-				for (String msg : response.getMessages()) {
-					messages.error("File [" + file.getFile().getFileName() + "] is not valid");
-					messages.error(msg);
-				}
-			}
-		}
-
-		@Override
-		protected ValidatingResult doServiceCall(final FileWidgetUpload recordId) throws PollingServiceException {
-
-			// Pretend Service Calls
-			String fileName = recordId.getFile().getFileName();
-			ValidatingResult result = new ValidatingResult();
-
-			if (fileName.contains("bad")) {
-				try {
-					Thread.currentThread().sleep(5000);
-				} catch (Exception e) {
-
-				}
-				result.addMessage("Bad file name");
-			} else if (fileName.contains("long")) {
-				try {
-					Thread.currentThread().sleep(10000);
-				} catch (Exception e) {
-
-				}
-			} else if (fileName.contains("error")) {
-				try {
-					Thread.currentThread().sleep(3000);
-				} catch (Exception e) {
-
-				}
-				throw new PollingServiceException("Exception validating file");
-			}
-			return result;
-		}
-
-	}
-
-	/**
-	 * Holds result of validation. No messages means it is valid.
-	 */
-	public static class ValidatingResult {
-
-		private List<String> messages;
-
-		/**
-		 * @param message add error message
-		 */
-		public void addMessage(final String message) {
-			if (messages == null) {
-				messages = new ArrayList<>();
-			}
-			messages.add(message);
-		}
-
-		/**
-		 * @return all error messages
-		 */
-		public List<String> getMessages() {
-			if (messages == null) {
-				return Collections.EMPTY_LIST;
-			} else {
-				return messages;
-			}
-		}
 	}
 
 }

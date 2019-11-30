@@ -23,6 +23,24 @@
 			<groupId>com.github.bordertech.wcomponents</groupId>
 			<artifactId>wcomponents-lde</artifactId>
 		</dependency>
+
+		<!-- Didiums -->
+		<dependency>
+			<groupId>com.github.bordertech.didums</groupId>
+			<artifactId>didums-core</artifactId>
+		</dependency>
+		<!-- Taskmaster -->
+		<dependency>
+			<groupId>com.github.bordertech.taskmaster</groupId>
+			<artifactId>taskmaster-service-helper</artifactId>
+		</dependency>
+
+		<!-- WComponents Addons -->
+		<dependency>
+			<groupId>com.github.bordertech.wcomponents</groupId>
+			<artifactId>wcomponents-addons-bundle</artifactId>
+		</dependency>
+
 	</dependencies>
 
 </project>
