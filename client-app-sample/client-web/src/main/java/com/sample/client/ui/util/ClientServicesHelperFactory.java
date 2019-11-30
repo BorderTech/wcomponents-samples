@@ -1,9 +1,9 @@
 package com.sample.client.ui.util;
 
 import com.github.bordertech.didums.Didums;
-import com.sample.client.services.ClientServicesHelper;
 import com.sample.client.services.ClientServicesMockImpl;
 import java.io.Serializable;
+import com.sample.client.services.ClientServices;
 
 /**
  * Provide an instance of the client services.
@@ -16,7 +16,7 @@ public final class ClientServicesHelperFactory implements Serializable {
 	/**
 	 * Singleton instance.
 	 */
-	private static final ClientServicesHelper INSTANCE = Didums.getService(ClientServicesHelper.class, ClientServicesMockImpl.class);
+	private static final ClientServices INSTANCE = Didums.getService(ClientServices.class, ClientServicesMockImpl.class);
 
 	/**
 	 * Don't allow external instantiation of this class.
@@ -28,7 +28,7 @@ public final class ClientServicesHelperFactory implements Serializable {
 	/**
 	 * @return the singleton instance of the CRM Services.
 	 */
-	public static ClientServicesHelper getInstance() {
+	public static ClientServices getInstance() {
 		return INSTANCE;
 	}
 }

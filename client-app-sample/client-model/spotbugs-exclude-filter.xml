@@ -5,8 +5,5 @@
 	<Match>
 		<Bug pattern="PMB_POSSIBLE_MEMORY_BLOAT" />
 	</Match>
-	<Match>
-		<Bug pattern="BED_HIERARCHICAL_EXCEPTION_DECLARATION" />
-	</Match>
 
 </FindBugsFilter>

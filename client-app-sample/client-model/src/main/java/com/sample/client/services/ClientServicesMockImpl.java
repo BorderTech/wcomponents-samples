@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -36,7 +37,7 @@ import org.apache.commons.io.IOUtils;
  * @since 1.0.0
  */
 @SuppressWarnings({"BED_HIERARCHICAL_EXCEPTION_DECLARATION", "PMB_POSSIBLE_MEMORY_BLOAT"})
-public class ClientServicesMockImpl implements ClientServicesHelper {
+public class ClientServicesMockImpl implements ClientServices {
 
 	private static final Set<IndividualDetail> INDIVIDUALS = new HashSet<>();
 
@@ -198,27 +199,8 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 	}
 
 	@Override
-	public List<ClientSummary> searchClients(final String search) throws ServiceException {
-
-		if ("error".equals(search)) {
-			throw new ServiceException("Mock error");
-		}
-
-		if ("none".equals(search)) {
-			return Collections.EMPTY_LIST;
-		}
-
-		List<ClientSummary> clients = new ArrayList<>();
-
-		for (IndividualDetail detail : INDIVIDUALS) {
-			clients.add(indivToSummary(detail));
-		}
-
-		for (OrganisationDetail detail : ORGANISATIONS) {
-			clients.add(orgToSummary(detail));
-		}
-
-		return clients;
+	public List<String> retrieveTables() throws ServiceException {
+		return Arrays.asList("country", "currency");
 	}
 
 	@Override
@@ -242,6 +224,54 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 	}
 
 	@Override
+	public List<ClientSummary> searchClients(final String search) throws ServiceException {
+
+		if ("error".equals(search)) {
+			throw new ServiceException("Mock error");
+		}
+
+		if ("none".equals(search)) {
+			return Collections.EMPTY_LIST;
+		}
+
+		List<ClientSummary> clients = new ArrayList<>();
+
+		for (IndividualDetail detail : searchIndividuals(search)) {
+			clients.add(indivToSummary(detail));
+		}
+
+		for (OrganisationDetail detail : searchOrganisations(search)) {
+			clients.add(orgToSummary(detail));
+		}
+
+		return clients;
+	}
+
+	@Override
+	public List<IndividualDetail> searchIndividuals(final String search) throws ServiceException {
+
+		if ("error".equals(search)) {
+			throw new ServiceException("Mock error");
+		}
+
+		if ("none".equals(search)) {
+			return Collections.EMPTY_LIST;
+		}
+
+		List<IndividualDetail> clients = new ArrayList<>();
+
+		for (IndividualDetail detail : INDIVIDUALS) {
+			// Basic search
+			if (isMatch(search, detail.getFirstName())
+					|| isMatch(search, detail.getLastName())) {
+				clients.add(detail);
+			}
+		}
+
+		return clients;
+	}
+
+	@Override
 	public IndividualDetail retrieveIndividual(final String clientId) throws ServiceException, ClientNotFoundException {
 		for (IndividualDetail detail : INDIVIDUALS) {
 			if (Objects.equals(clientId, detail.getClientId())) {
@@ -252,7 +282,7 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 	}
 
 	@Override
-	public String createIndividual(final IndividualDetail detail) throws ServiceException {
+	public IndividualDetail createIndividual(final IndividualDetail detail) throws ServiceException {
 		if ("error".equals(detail.getFirstName())) {
 			throw new ServiceException("Mock error");
 		}
@@ -260,15 +290,39 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 
 		detail.setClientId(id);
 		INDIVIDUALS.add(detail);
-		return id;
+		return detail;
 	}
 
 	@Override
-	public void updateIndividual(final IndividualDetail detail) throws ServiceException {
+	public IndividualDetail updateIndividual(final IndividualDetail detail) throws ServiceException {
 		if ("error".equals(detail.getFirstName())) {
 			throw new ServiceException("Mock error");
 		}
 		INDIVIDUALS.add(detail);
+		return detail;
+	}
+
+	@Override
+	public List<OrganisationDetail> searchOrganisations(final String search) throws ServiceException {
+
+		if ("error".equals(search)) {
+			throw new ServiceException("Mock error");
+		}
+
+		if ("none".equals(search)) {
+			return Collections.EMPTY_LIST;
+		}
+
+		List<OrganisationDetail> clients = new ArrayList<>();
+
+		for (OrganisationDetail detail : ORGANISATIONS) {
+			// Basic search
+			if (isMatch(search, detail.getName())) {
+				clients.add(detail);
+			}
+		}
+
+		return clients;
 	}
 
 	@Override
@@ -282,7 +336,7 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 	}
 
 	@Override
-	public String createOrganisation(final OrganisationDetail detail) throws ServiceException {
+	public OrganisationDetail createOrganisation(final OrganisationDetail detail) throws ServiceException {
 		if ("error".equals(detail.getName())) {
 			throw new ServiceException("Mock error");
 		}
@@ -290,15 +344,16 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 
 		detail.setClientId(id);
 		ORGANISATIONS.add(detail);
-		return id;
+		return detail;
 	}
 
 	@Override
-	public void updateOrganisation(final OrganisationDetail detail) throws ServiceException {
+	public OrganisationDetail updateOrganisation(final OrganisationDetail detail) throws ServiceException {
 		if ("error".equals(detail.getName())) {
 			throw new ServiceException("Mock error");
 		}
 		ORGANISATIONS.add(detail);
+		return detail;
 	}
 
 	@Override
@@ -357,6 +412,13 @@ public class ClientServicesMockImpl implements ClientServicesHelper {
 		} else {
 			return "";
 		}
+	}
+
+	private boolean isMatch(final String search, final String value) {
+		if (search == null || search.isEmpty()) {
+			return true;
+		}
+		return value.toLowerCase().contains(search.toLowerCase());
 	}
 
 }

@@ -43,7 +43,7 @@ public class ValidatingPollingPanel extends PollingServicePanel<WMultiFileWidget
 	}
 
 	@Override
-	protected void handleResult(ResultHolder<WMultiFileWidget.FileWidgetUpload, ValidatingResult> resultHolder) {
+	protected void handleResult(final ResultHolder<WMultiFileWidget.FileWidgetUpload, ValidatingResult> resultHolder) {
 		// TODO This fix needs to be applied to ADDONS to handle the response returning before starting polling
 		handleSaveServiceResult(resultHolder);
 		super.handleResult(resultHolder);

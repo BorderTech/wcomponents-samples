@@ -24,7 +24,6 @@ import com.github.bordertech.wcomponents.validation.ValidatingAction;
 import com.sample.client.model.ClientSummary;
 import com.sample.client.model.IndividualDetail;
 import com.sample.client.model.OrganisationDetail;
-import com.sample.client.services.ClientServicesHelper;
 import com.sample.client.ui.application.ClientApp;
 import com.sample.client.ui.common.ClientWMessages;
 import com.sample.client.ui.common.Constants;
@@ -34,6 +33,7 @@ import com.sample.client.ui.util.ClientServicesHelperFactory;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import com.sample.client.services.ClientServices;
 
 /**
  * Search view.
@@ -48,7 +48,7 @@ public class SearchView extends WSection implements MessageContainer {
 	 */
 	private static final Log LOG = LogFactory.getLog(SearchView.class);
 
-	private static final ClientServicesHelper CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
+	private static final ClientServices CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
 
 	/**
 	 * Main controller.

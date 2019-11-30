@@ -9,7 +9,7 @@ import com.github.bordertech.wcomponents.WTextField;
 import com.sample.client.model.ClientSummary;
 import com.sample.client.model.ClientType;
 import com.sample.client.model.OrganisationDetail;
-import com.sample.client.services.ClientServicesHelper;
+import com.sample.client.services.ClientServices;
 import com.sample.client.services.exception.ServiceException;
 import com.sample.client.ui.application.ClientApp;
 import com.sample.client.ui.common.AddressPanel;
@@ -23,7 +23,7 @@ import com.sample.client.ui.util.ClientServicesHelperFactory;
  */
 public class OrganisationView extends AbstractView<OrganisationDetail> {
 
-	private static final ClientServicesHelper CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
+	private static final ClientServices CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
 
 	/**
 	 * @param app the client app.
@@ -76,7 +76,7 @@ public class OrganisationView extends AbstractView<OrganisationDetail> {
 
 	@Override
 	protected void doCreateServiceCall(final OrganisationDetail bean) throws ServiceException {
-		String id = CLIENT_SERVICES.createOrganisation(bean);
+		String id = CLIENT_SERVICES.createOrganisation(bean).getClientId();
 		getApp().getMessages().success("Organisation [" + id + "] created.");
 	}
 

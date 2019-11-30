@@ -3,7 +3,6 @@ package com.sample.client.ui.util;
 import com.github.bordertech.wcomponents.util.LookupTable;
 import com.github.bordertech.wcomponents.util.SystemException;
 import com.sample.client.model.CodeOption;
-import com.sample.client.services.ClientServicesHelper;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +14,7 @@ import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.AccessedExpiryPolicy;
 import javax.cache.expiry.Duration;
+import com.sample.client.services.ClientServices;
 
 /**
  *
@@ -28,7 +28,7 @@ public class LookupTableImpl implements LookupTable {
 	 */
 	private static final String CACHE_NAME = "client-lookuptable";
 
-	private static final ClientServicesHelper CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
+	private static final ClientServices CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
 
 	private static final String CACHE_DELIM = "#";
 

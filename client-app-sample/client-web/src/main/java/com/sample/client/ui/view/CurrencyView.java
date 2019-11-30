@@ -15,7 +15,6 @@ import com.github.bordertech.wcomponents.WNumberField;
 import com.github.bordertech.wcomponents.WPanel;
 import com.github.bordertech.wcomponents.WSection;
 import com.sample.client.model.CodeOption;
-import com.sample.client.services.ClientServicesHelper;
 import com.sample.client.ui.application.ClientApp;
 import com.sample.client.ui.common.ClientWMessages;
 import com.sample.client.ui.common.Constants;
@@ -24,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import com.sample.client.services.ClientServices;
 
 /**
  * Conversion view.
@@ -38,7 +38,7 @@ public class CurrencyView extends WSection implements MessageContainer {
 	 */
 	private static final Log LOG = LogFactory.getLog(CurrencyView.class);
 
-	private static final ClientServicesHelper CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
+	private static final ClientServices CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
 
 	private final WNumberField fromAmount = new WNumberField();
 

@@ -17,7 +17,7 @@ import com.sample.client.model.ClientType;
 import com.sample.client.model.CodeOption;
 import com.sample.client.model.IndividualDetail;
 import com.sample.client.model.PassportDetail;
-import com.sample.client.services.ClientServicesHelper;
+import com.sample.client.services.ClientServices;
 import com.sample.client.services.exception.ServiceException;
 import com.sample.client.ui.application.ClientApp;
 import com.sample.client.ui.common.AddressPanel;
@@ -36,7 +36,7 @@ import java.util.List;
  */
 public class IndividualView extends AbstractView<IndividualDetail> {
 
-	private static final ClientServicesHelper CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
+	private static final ClientServices CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
 
 	private final WTextField txtPassportNumber = new WTextField();
 	private final WDropdown drpPassportCountry = new WDropdown(Constants.COUNTRY_TABLE_WITH_NULL);
@@ -188,7 +188,7 @@ public class IndividualView extends AbstractView<IndividualDetail> {
 
 	@Override
 	protected void doCreateServiceCall(final IndividualDetail bean) throws ServiceException {
-		String id = CLIENT_SERVICES.createIndividual(bean);
+		String id = CLIENT_SERVICES.createIndividual(bean).getClientId();
 		getApp().getMessages().success("Individual [" + id + "] created.");
 	}
 

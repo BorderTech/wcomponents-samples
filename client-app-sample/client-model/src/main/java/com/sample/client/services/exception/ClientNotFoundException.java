@@ -6,7 +6,7 @@ package com.sample.client.services.exception;
  * @author Jonathan Austin
  * @since 1.0.0
  */
-public class ClientNotFoundException extends ServiceException {
+public class ClientNotFoundException extends Exception {
 
 	/**
 	 * Construct exception.

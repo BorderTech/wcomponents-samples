@@ -20,6 +20,7 @@
 	<modules>
 		<module>client-svc-jaxb</module>
 		<module>client-model</module>
+		<module>client-rest-api</module>
 		<module>client-web</module>
 		<module>client-lde</module>
 		<module>client-war</module>

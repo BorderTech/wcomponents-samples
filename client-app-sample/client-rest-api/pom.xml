@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<name>client-rest-api</name>
+	<artifactId>client-rest-api</artifactId>
+
+	<parent>
+		<groupId>com.sample</groupId>
+		<artifactId>client-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<packaging>jar</packaging>
+
+	<dependencies>
+
+		<!-- Model -->
+		<dependency>
+			<groupId>com.sample</groupId>
+			<artifactId>client-model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Servlet API -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Swagger-Jersey -->
+		<dependency>
+			<groupId>com.github.bordertech.restfriends</groupId>
+			<artifactId>restfriends-swagger-jersey2</artifactId>
+			<version>2.0.0-beta-1</version>
+		</dependency>
+
+		<!-- Didiums -->
+		<dependency>
+			<groupId>com.github.bordertech.didums</groupId>
+			<artifactId>didums-core</artifactId>
+		</dependency>
+		<!-- Taskmaster -->
+		<dependency>
+			<groupId>com.github.bordertech.taskmaster</groupId>
+			<artifactId>taskmaster-service-helper</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+</project>

@@ -6,7 +6,7 @@ package com.sample.client.services.exception;
  * @author Jonathan Austin
  * @since 1.0.0
  */
-public class DocumentNotFoundException extends ServiceException {
+public class DocumentNotFoundException extends Exception {
 
 	/**
 	 * Construct exception.

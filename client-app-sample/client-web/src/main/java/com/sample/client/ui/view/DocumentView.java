@@ -31,7 +31,6 @@ import com.github.bordertech.wcomponents.addons.common.relative.WLibTab;
 import com.github.bordertech.wcomponents.layout.ColumnLayout;
 import com.sample.client.model.DocumentContent;
 import com.sample.client.model.DocumentDetail;
-import com.sample.client.services.ClientServicesHelper;
 import com.sample.client.services.exception.ServiceException;
 import com.sample.client.ui.application.ClientApp;
 import com.sample.client.ui.common.ClientWMessages;
@@ -45,6 +44,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import javax.cache.Cache;
+import com.sample.client.services.ClientServices;
 
 /**
  * Document view.
@@ -73,7 +73,7 @@ public class DocumentView extends WSection implements MessageContainer {
 		}
 	};
 
-	private static final ClientServicesHelper CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
+	private static final ClientServices CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
 
 	private final ClientApp app;
 
