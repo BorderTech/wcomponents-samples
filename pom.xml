@@ -78,6 +78,18 @@
 
 	</profiles>
 
+	<build>
+		<pluginManagement>
+			<!-- Allows project to be run via mvn lde-exec:run. -->
+			<plugins>
+				<plugin>
+					<groupId>com.github.bordertech.lde</groupId>
+					<artifactId>lde-exec-maven-plugin</artifactId>
+					<version>1.0.4</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
 	<dependencyManagement>
 		<dependencies>
@@ -88,17 +100,13 @@
 				<version>${wcomponent.version}</version>
 			</dependency>
 
+			<!-- Tomcat LDE -->
 			<dependency>
-				<groupId>com.github.bordertech.wcomponents</groupId>
-				<artifactId>wcomponents-test-lib</artifactId>
-				<version>${wcomponent.version}</version>
+				<groupId>com.github.bordertech.lde</groupId>
+				<artifactId>lde-tomcat</artifactId>
+				<version>1.0.4</version>
 			</dependency>
 
-			<dependency>
-				<groupId>com.github.bordertech.wcomponents</groupId>
-				<artifactId>wcomponents-lde</artifactId>
-				<version>${wcomponent.version}</version>
-			</dependency>
 
 			<!-- WComponents Addons -->
 			<dependency>

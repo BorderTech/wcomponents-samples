@@ -4,7 +4,7 @@
 	<display-name>Demo Chart</display-name>
 	<servlet>
 		<servlet-name>DemoServlet</servlet-name>
-		<servlet-class>com.sample.chart.servlet.DemoServlet</servlet-class>
+		<servlet-class>com.sample.chart.DemoServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>DemoServlet</servlet-name>

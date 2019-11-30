@@ -16,18 +16,27 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
-
+		<!-- Web application -->
 		<dependency>
 			<groupId>com.sample</groupId>
 			<artifactId>client-web</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
+		<!-- Tomcat LDE -->
 		<dependency>
-			<groupId>com.github.bordertech.wcomponents</groupId>
-			<artifactId>wcomponents-lde</artifactId>
+			<groupId>com.github.bordertech.lde</groupId>
+			<artifactId>lde-tomcat</artifactId>
 		</dependency>
-
 	</dependencies>
+
+	<build>
+		<!-- Allows project to be run via mvn lde-exec:run. -->
+		<plugins>
+			<plugin>
+				<groupId>com.github.bordertech.lde</groupId>
+				<artifactId>lde-exec-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

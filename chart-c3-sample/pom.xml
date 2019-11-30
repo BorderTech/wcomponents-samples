@@ -23,6 +23,7 @@
 	<modules>
 		<module>chart-c3-web</module>
 		<module>chart-c3-war</module>
+		<module>chart-c3-lde</module>
 	</modules>
 
 </project>

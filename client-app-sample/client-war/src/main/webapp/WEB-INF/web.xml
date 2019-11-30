@@ -3,6 +3,10 @@
 <web-app id="WServletClientWebApp_ID">
 	<display-name>Client Search</display-name>
 
+	<listener>
+		<listener-class>com.github.bordertech.taskmaster.servlet.TaskContextListener</listener-class>
+	</listener>
+
 	<servlet>
 		<servlet-name>ClientServlet</servlet-name>
 		<servlet-class>com.sample.client.ui.servlet.ClientServlet</servlet-class>

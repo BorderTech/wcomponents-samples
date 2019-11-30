@@ -3,8 +3,8 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<name>chart-c3-web</name>
-	<artifactId>chart-c3-web</artifactId>
+	<name>chart-c3-lde</name>
+	<artifactId>chart-c3-lde</artifactId>
 
 	<parent>
 		<groupId>com.sample</groupId>
@@ -16,17 +16,27 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
-		<!-- WComponents -->
+		<!-- Web Application -->
 		<dependency>
-			<groupId>com.github.bordertech.wcomponents</groupId>
-			<artifactId>wcomponents-bundle</artifactId>
+			<groupId>com.sample</groupId>
+			<artifactId>chart-c3-web</artifactId>
+			<version>${project.version}</version>
 		</dependency>
-		<!-- Servlet API -->
+		<!-- Tomcat LDE -->
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<scope>provided</scope>
+			<groupId>com.github.bordertech.lde</groupId>
+			<artifactId>lde-tomcat</artifactId>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<!-- Allows project to be run via mvn lde-exec:run. -->
+		<plugins>
+			<plugin>
+				<groupId>com.github.bordertech.lde</groupId>
+				<artifactId>lde-exec-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

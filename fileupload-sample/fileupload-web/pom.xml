@@ -15,13 +15,22 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<!-- Servlet API -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- WComponents -->
 		<dependency>
 			<groupId>com.github.bordertech.wcomponents</groupId>
 			<artifactId>wcomponents-bundle</artifactId>
 		</dependency>
+		<!-- WComponents Addons -->
 		<dependency>
 			<groupId>com.github.bordertech.wcomponents</groupId>
-			<artifactId>wcomponents-lde</artifactId>
+			<artifactId>wcomponents-addons-bundle</artifactId>
 		</dependency>
 
 		<!-- Didiums -->
@@ -33,12 +42,6 @@
 		<dependency>
 			<groupId>com.github.bordertech.taskmaster</groupId>
 			<artifactId>taskmaster-service-helper</artifactId>
-		</dependency>
-
-		<!-- WComponents Addons -->
-		<dependency>
-			<groupId>com.github.bordertech.wcomponents</groupId>
-			<artifactId>wcomponents-addons-bundle</artifactId>
 		</dependency>
 
 	</dependencies>

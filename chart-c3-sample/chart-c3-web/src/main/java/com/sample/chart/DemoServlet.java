@@ -1,9 +1,8 @@
-package com.sample.chart.servlet;
+package com.sample.chart;
 
 import com.github.bordertech.wcomponents.WComponent;
 import com.github.bordertech.wcomponents.registry.UIRegistry;
 import com.github.bordertech.wcomponents.servlet.WServlet;
-import com.sample.chart.DemoApp;
 
 /**
  * Servlet to feed up the application.

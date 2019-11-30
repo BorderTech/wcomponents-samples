@@ -15,17 +15,8 @@
 
 	<packaging>war</packaging>
 
-	<build>
-		<!-- Allows project to be run via mvn jetty:run from the web-war directory. -->
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-
 	<dependencies>
+		<!-- Web Application -->
 		<dependency>
 			<groupId>com.sample</groupId>
 			<artifactId>client-web</artifactId>
