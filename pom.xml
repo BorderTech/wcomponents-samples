@@ -44,7 +44,10 @@
 		<bt.qa.skip>false</bt.qa.skip>
 		<dependency-check.skip>true</dependency-check.skip>
 		<enforcer.fail>false</enforcer.fail>
+		<!--
 		<wcomponent.version>1.5.14</wcomponent.version>
+		-->
+		<wcomponent.version>1.4.26</wcomponent.version>
 	</properties>
 
 	<profiles>
