@@ -8,6 +8,8 @@ import com.github.bordertech.wcomponents.MessageContainer;
 import com.github.bordertech.wcomponents.WButton;
 import com.github.bordertech.wcomponents.WComponent;
 import com.github.bordertech.wcomponents.WContainer;
+import com.github.bordertech.wcomponents.WMenu;
+import com.github.bordertech.wcomponents.WMenuItem;
 import com.github.bordertech.wcomponents.WMessages;
 import com.github.bordertech.wcomponents.WPanel;
 import com.github.bordertech.wcomponents.WSection;
@@ -24,18 +26,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Abstract view.
+ * Abstract client view.
  *
  * @author Jonathan Austin
  * @param <T> the bound bean type
  * @since 1.0.0
  */
-public abstract class AbstractView<T> extends WSection implements MessageContainer {
+public abstract class AbstractClientView<T> extends WSection implements MessageContainer {
 
 	/**
 	 * The logger instance for this class.
 	 */
-	private static final Log LOG = LogFactory.getLog(AbstractView.class);
+	private static final Log LOG = LogFactory.getLog(AbstractClientView.class);
 
 	/**
 	 * Main controller.
@@ -51,11 +53,13 @@ public abstract class AbstractView<T> extends WSection implements MessageContain
 	 * @param title the view title
 	 * @param app the client app
 	 */
-	public AbstractView(final String title, final ClientApp app) {
+	public AbstractClientView(final String title, final ClientApp app) {
 		super(title);
 		this.app = app;
 
 		WPanel content = getContent();
+
+		setupMenu();
 
 		// Messages
 		content.add(messages);
@@ -96,6 +100,37 @@ public abstract class AbstractView<T> extends WSection implements MessageContain
 				doMakeReadOnly(child);
 			}
 		}
+	}
+
+	private void setupMenu() {
+		WPanel content = getContent();
+
+		// Menu
+		WMenu menu = new WMenu();
+		content.add(menu);
+
+		WMenuItem item = new WMenuItem("Back");
+		item.setAction(new Action() {
+			@Override
+			public void execute(final ActionEvent event) {
+				getApp().showSearch();
+			}
+		});
+		menu.add(item);
+
+		item = new WMenuItem("Reset") {
+			@Override
+			public boolean isVisible() {
+				return getViewMode() != ViewMode.READONLY;
+			}
+		};
+		item.setAction(new Action() {
+			@Override
+			public void execute(final ActionEvent event) {
+				doReset();
+			}
+		});
+		menu.add(item);
 	}
 
 	/**
@@ -170,6 +205,18 @@ public abstract class AbstractView<T> extends WSection implements MessageContain
 
 	}
 
+	/**
+	 * Handle reset details.
+	 */
+	protected void doReset() {
+		T bean = getDetail();
+		getContent().reset();
+		setDetail(bean);
+	}
+
+	/**
+	 * Handle save action.
+	 */
 	protected void doSaveAction() {
 		doUpdateDetailBean();
 		T bean = getDetail();

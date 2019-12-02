@@ -34,7 +34,7 @@ import java.util.List;
  * @author Jonathan Austin
  * @since 1.0.0
  */
-public class IndividualView extends AbstractView<IndividualDetail> {
+public class IndividualView extends AbstractClientView<IndividualDetail> {
 
 	private static final ClientServices CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
 

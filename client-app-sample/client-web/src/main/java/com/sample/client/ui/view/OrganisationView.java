@@ -21,7 +21,7 @@ import com.sample.client.ui.util.ClientServicesHelperFactory;
  * @author Jonathan Austin
  * @since 1.0.0
  */
-public class OrganisationView extends AbstractView<OrganisationDetail> {
+public class OrganisationView extends AbstractClientView<OrganisationDetail> {
 
 	private static final ClientServices CLIENT_SERVICES = ClientServicesHelperFactory.getInstance();
 

@@ -89,7 +89,7 @@ public class SearchView extends WSection implements MessageContainer {
 		layout.setMargin(Constants.NORTH_MARGIN_LARGE);
 		content.add(layout);
 
-		WField btnField = layout.addField("Search criteria", txtSearch);
+		WField btnField = layout.addField("Search name", txtSearch);
 		btnField.setInputWidth(100);
 //		txtSearch.setMandatory(true);
 
