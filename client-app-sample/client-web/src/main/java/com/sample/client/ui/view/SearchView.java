@@ -8,6 +8,7 @@ import com.github.bordertech.wcomponents.SimpleBeanBoundTableModel;
 import com.github.bordertech.wcomponents.WAjaxControl;
 import com.github.bordertech.wcomponents.WButton;
 import com.github.bordertech.wcomponents.WContainer;
+import com.github.bordertech.wcomponents.WField;
 import com.github.bordertech.wcomponents.WFieldLayout;
 import com.github.bordertech.wcomponents.WList;
 import com.github.bordertech.wcomponents.WMenu;
@@ -24,6 +25,7 @@ import com.github.bordertech.wcomponents.validation.ValidatingAction;
 import com.sample.client.model.ClientSummary;
 import com.sample.client.model.IndividualDetail;
 import com.sample.client.model.OrganisationDetail;
+import com.sample.client.services.ClientServices;
 import com.sample.client.ui.application.ClientApp;
 import com.sample.client.ui.common.ClientWMessages;
 import com.sample.client.ui.common.Constants;
@@ -33,7 +35,6 @@ import com.sample.client.ui.util.ClientServicesHelperFactory;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.sample.client.services.ClientServices;
 
 /**
  * Search view.
@@ -88,8 +89,9 @@ public class SearchView extends WSection implements MessageContainer {
 		layout.setMargin(Constants.NORTH_MARGIN_LARGE);
 		content.add(layout);
 
-		layout.addField("Search criteria", txtSearch).setInputWidth(100);
-		txtSearch.setMandatory(true);
+		WField btnField = layout.addField("Search criteria", txtSearch);
+		btnField.setInputWidth(100);
+//		txtSearch.setMandatory(true);
 
 		WButton searchButton = new WButton("Search");
 		searchButton.setAction(new ValidatingAction(messages.getValidationErrors(), layout) {
@@ -100,7 +102,7 @@ public class SearchView extends WSection implements MessageContainer {
 		});
 		layout.addField(searchButton);
 
-		WAjaxControl ajax = new WAjaxControl(searchButton, new AjaxTarget[]{messages, resultsPanel});
+		WAjaxControl ajax = new WAjaxControl(searchButton, new AjaxTarget[]{btnField, messages, resultsPanel});
 		content.add(ajax);
 
 		// Table
@@ -233,6 +235,8 @@ public class SearchView extends WSection implements MessageContainer {
 		listPassport.setRepeatedComponent(new WTextPassportNumber());
 
 		table.setMargin(Constants.SOUTH_MARGIN_LARGE);
+		table.addColumn(new WTableColumn("ID", new WText()));
+		table.addColumn(new WTableColumn("Type", new WText()));
 		table.addColumn(new WTableColumn("Name", new WText()));
 		table.addColumn(new WTableColumn("Address", new WText()));
 		table.addColumn(new WTableColumn("Country", listCountry));
@@ -241,7 +245,7 @@ public class SearchView extends WSection implements MessageContainer {
 		table.setStripingType(WTable.StripingType.ROWS);
 		table.setNoDataMessage("No clients found.");
 
-		SimpleBeanBoundTableModel model = new SimpleBeanBoundTableModel(new String[]{"name", "address", "identifications", "identifications", "."});
+		SimpleBeanBoundTableModel model = new SimpleBeanBoundTableModel(new String[]{"clientId", "type", "name", "address", "identifications", "identifications", "."});
 		table.setTableModel(model);
 
 		table.setBeanProperty(".");

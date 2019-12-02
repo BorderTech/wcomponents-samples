@@ -84,6 +84,14 @@ public interface ClientServices {
 	IndividualDetail updateIndividual(IndividualDetail detail) throws ServiceException;
 
 	/**
+	 * Delete an individual.
+	 *
+	 * @param clientId the client Id to delete
+	 * @throws ServiceException a service exception
+	 */
+	void deleteIndividual(String clientId) throws ServiceException;
+
+	/**
 	 * Search origanisations.
 	 *
 	 * @param search the search criteria
@@ -119,6 +127,14 @@ public interface ClientServices {
 	 * @throws ServiceException a service exception
 	 */
 	OrganisationDetail updateOrganisation(OrganisationDetail detail) throws ServiceException;
+
+	/**
+	 * Delete an organisation.
+	 *
+	 * @param clientId the client Id to delete
+	 * @throws ServiceException a service exception
+	 */
+	void deleteOrganisation(String clientId) throws ServiceException;
 
 	/**
 	 * Retrieve client documents.

@@ -32,7 +32,9 @@ import io.swagger.annotations.ApiResponses;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -41,6 +43,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * Sample REST Resource call a backing service implementation.
@@ -197,9 +200,34 @@ public class ClientServicesResource {
 			@ApiParam(value = "Client id") @PathParam("id") final String clientId,
 			@ApiParam(value = "Individual details") final IndividualDetail detail)
 			throws RestBusinessException {
+		// Check IDs
+		if (!Objects.equals(clientId, detail.getClientId())) {
+			throw new RestBusinessException("Client ID does not match ID in details.");
+		}
 		try {
 			IndividualDetail resp = backing.updateIndividual(detail);
 			return new IndividualDetailResponse(resp);
+		} catch (ServiceException e) {
+			throw new RestBusinessException(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Delete individuals.
+	 *
+	 * @param clientId the client id
+	 * @return the OK response
+	 * @throws RestBusinessException a business exception
+	 */
+	@DELETE
+	@Path("individuals/{id}")
+	@ApiOperation(value = "Delete individual")
+	public Response deleteIndividual(
+			@ApiParam(value = "Client id") @PathParam("id") final String clientId)
+			throws RestBusinessException {
+		try {
+			backing.deleteIndividual(clientId);
+			return Response.ok().build();
 		} catch (ServiceException e) {
 			throw new RestBusinessException(e.getMessage(), e);
 		}
@@ -283,9 +311,34 @@ public class ClientServicesResource {
 			@ApiParam(value = "Client id") @PathParam("id") final String clientId,
 			@ApiParam(value = "Organisation details") final OrganisationDetail detail)
 			throws RestBusinessException {
+		// Check IDs
+		if (!Objects.equals(clientId, detail.getClientId())) {
+			throw new RestBusinessException("Client ID does not match ID in details.");
+		}
 		try {
 			OrganisationDetail resp = backing.updateOrganisation(detail);
 			return new OrganisationDetailResponse(resp);
+		} catch (ServiceException e) {
+			throw new RestBusinessException(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Delete organisation.
+	 *
+	 * @param clientId the client id
+	 * @return the OK response
+	 * @throws RestBusinessException a business exception
+	 */
+	@DELETE
+	@Path("organisations/{id}")
+	@ApiOperation(value = "Delete organisation")
+	public Response deleteOrganisation(
+			@ApiParam(value = "Client id") @PathParam("id") final String clientId)
+			throws RestBusinessException {
+		try {
+			backing.deleteOrganisation(clientId);
+			return Response.ok().build();
 		} catch (ServiceException e) {
 			throw new RestBusinessException(e.getMessage(), e);
 		}

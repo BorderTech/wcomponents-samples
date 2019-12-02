@@ -17,17 +17,14 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -39,21 +36,46 @@ import org.apache.commons.io.IOUtils;
 @SuppressWarnings({"BED_HIERARCHICAL_EXCEPTION_DECLARATION", "PMB_POSSIBLE_MEMORY_BLOAT"})
 public class ClientServicesMockImpl implements ClientServices {
 
-	private static final Set<IndividualDetail> INDIVIDUALS = new HashSet<>();
+	private static final AtomicInteger IND_IDS = new AtomicInteger(1);
+	private static final AtomicInteger ORG_IDS = new AtomicInteger(1);
 
-	private static final Set<OrganisationDetail> ORGANISATIONS = new HashSet<>();
-
+	private static final Map<String, IndividualDetail> INDIVIDUALS = new HashMap<>();
+	private static final Map<String, OrganisationDetail> ORGANISATIONS = new HashMap<>();
 	private static final Map<String, DocumentDetail> DOCUMENTS = createDocuments();
+	private static final Map<String, List<CodeOption>> TABLES = createTables();
 
 	static {
 		for (int i = 1; i < 10; i++) {
-			INDIVIDUALS.add(createIndividual(i));
+			IndividualDetail client = createIndividual(IND_IDS.getAndIncrement());
+			INDIVIDUALS.put(client.getClientId(), client);
 		}
 
 		for (int i = 1; i < 10; i++) {
-			ORGANISATIONS.add(createOrganisation(i));
+			OrganisationDetail client = createOrganisation(ORG_IDS.getAndIncrement());
+			ORGANISATIONS.put(client.getClientId(), client);
 		}
 
+	}
+
+	private static Map<String, List<CodeOption>> createTables() {
+
+		Map<String, List<CodeOption>> tables = new HashMap<>();
+
+		// Country
+		List<CodeOption> options = new ArrayList<>();
+		options.add(new CodeOption("A", "Australia"));
+		options.add(new CodeOption("NZ", "New Zealand"));
+		options.add(new CodeOption("UK", "United Kingdom"));
+		tables.put("country", options);
+
+		// Currency
+		options = new ArrayList<>();
+		options.add(new CodeOption("AUD", "Australia Dollar"));
+		options.add(new CodeOption("GBP", "British Pound"));
+		options.add(new CodeOption("USD", "US Dollar"));
+		tables.put("currency", options);
+
+		return tables;
 	}
 
 	/**
@@ -146,7 +168,7 @@ public class ClientServicesMockImpl implements ClientServices {
 		}
 		summary.setName(detail.getFirstName() + " " + detail.getLastName());
 		if (detail.getIdentifications() != null) {
-			summary.setIdentifications(new ArrayList<PassportDetail>(detail.getIdentifications()));
+			summary.setIdentifications(new ArrayList<>(detail.getIdentifications()));
 		}
 		return summary;
 	}
@@ -200,26 +222,15 @@ public class ClientServicesMockImpl implements ClientServices {
 
 	@Override
 	public List<String> retrieveTables() throws ServiceException {
-		return Arrays.asList("country", "currency");
+		return new ArrayList<>(TABLES.keySet());
 	}
 
 	@Override
 	public List<CodeOption> retrieveCodes(final String table) throws ServiceException {
-		List<CodeOption> options = new ArrayList<>();
-
-		switch (table) {
-			case "country":
-				options.add(new CodeOption("A", "Australia"));
-				options.add(new CodeOption("NZ", "New Zealand"));
-				options.add(new CodeOption("UK", "United Kingdom"));
-				break;
-			case "currency":
-				options.add(new CodeOption("AUD", "Australia Dollar"));
-				options.add(new CodeOption("GBP", "British Pound"));
-				options.add(new CodeOption("USD", "US Dollar"));
-				break;
+		List<CodeOption> options = TABLES.get(table);
+		if (options == null) {
+			throw new ServiceException("Table not found [" + table + "]");
 		}
-
 		return options;
 	}
 
@@ -260,7 +271,7 @@ public class ClientServicesMockImpl implements ClientServices {
 
 		List<IndividualDetail> clients = new ArrayList<>();
 
-		for (IndividualDetail detail : INDIVIDUALS) {
+		for (IndividualDetail detail : INDIVIDUALS.values()) {
 			// Basic search
 			if (isMatch(search, detail.getFirstName())
 					|| isMatch(search, detail.getLastName())) {
@@ -273,33 +284,52 @@ public class ClientServicesMockImpl implements ClientServices {
 
 	@Override
 	public IndividualDetail retrieveIndividual(final String clientId) throws ServiceException, ClientNotFoundException {
-		for (IndividualDetail detail : INDIVIDUALS) {
-			if (Objects.equals(clientId, detail.getClientId())) {
-				return detail;
-			}
+		IndividualDetail detail = INDIVIDUALS.get(clientId);
+		if (detail == null) {
+			throw new ClientNotFoundException();
 		}
-		throw new ClientNotFoundException();
+		return detail;
 	}
 
 	@Override
 	public IndividualDetail createIndividual(final IndividualDetail detail) throws ServiceException {
+
 		if ("error".equals(detail.getFirstName())) {
 			throw new ServiceException("Mock error");
 		}
-		String id = UUID.randomUUID().toString();
 
+		String id = "INDIV" + IND_IDS.getAndIncrement();
 		detail.setClientId(id);
-		INDIVIDUALS.add(detail);
+		INDIVIDUALS.put(id, detail);
+
 		return detail;
 	}
 
 	@Override
 	public IndividualDetail updateIndividual(final IndividualDetail detail) throws ServiceException {
+
 		if ("error".equals(detail.getFirstName())) {
 			throw new ServiceException("Mock error");
 		}
-		INDIVIDUALS.add(detail);
+
+		String key = detail.getClientId();
+		// Check exists
+		if (!INDIVIDUALS.containsKey(key)) {
+			throw new ServiceException("Individual does not exist [" + key + "].");
+		}
+		// Add updated
+		INDIVIDUALS.put(key, detail);
 		return detail;
+	}
+
+	@Override
+	public void deleteIndividual(final String clientId) throws ServiceException {
+		// Check exists
+		if (!INDIVIDUALS.containsKey(clientId)) {
+			throw new ServiceException("Individual does not exist [" + clientId + "].");
+		}
+		// Remove
+		INDIVIDUALS.remove(clientId);
 	}
 
 	@Override
@@ -315,7 +345,7 @@ public class ClientServicesMockImpl implements ClientServices {
 
 		List<OrganisationDetail> clients = new ArrayList<>();
 
-		for (OrganisationDetail detail : ORGANISATIONS) {
+		for (OrganisationDetail detail : ORGANISATIONS.values()) {
 			// Basic search
 			if (isMatch(search, detail.getName())) {
 				clients.add(detail);
@@ -327,12 +357,11 @@ public class ClientServicesMockImpl implements ClientServices {
 
 	@Override
 	public OrganisationDetail retrieveOrganisation(final String clientId) throws ServiceException, ClientNotFoundException {
-		for (OrganisationDetail detail : ORGANISATIONS) {
-			if (Objects.equals(clientId, detail.getClientId())) {
-				return detail;
-			}
+		OrganisationDetail detail = ORGANISATIONS.get(clientId);
+		if (detail == null) {
+			throw new ClientNotFoundException();
 		}
-		throw new ClientNotFoundException();
+		return detail;
 	}
 
 	@Override
@@ -340,10 +369,11 @@ public class ClientServicesMockImpl implements ClientServices {
 		if ("error".equals(detail.getName())) {
 			throw new ServiceException("Mock error");
 		}
-		String id = UUID.randomUUID().toString();
 
+		String id = "ORG" + ORG_IDS.getAndIncrement();
 		detail.setClientId(id);
-		ORGANISATIONS.add(detail);
+
+		ORGANISATIONS.put(id, detail);
 		return detail;
 	}
 
@@ -352,8 +382,24 @@ public class ClientServicesMockImpl implements ClientServices {
 		if ("error".equals(detail.getName())) {
 			throw new ServiceException("Mock error");
 		}
-		ORGANISATIONS.add(detail);
+
+		String key = detail.getClientId();
+		if (!ORGANISATIONS.containsKey(key)) {
+			throw new ServiceException("Organisation does not exist [" + key + "].");
+		}
+		// Update
+		ORGANISATIONS.put(key, detail);
 		return detail;
+	}
+
+	@Override
+	public void deleteOrganisation(final String clientId) throws ServiceException {
+		// Check exists
+		if (!ORGANISATIONS.containsKey(clientId)) {
+			throw new ServiceException("Organisation does not exist [" + clientId + "].");
+		}
+		// Remove
+		ORGANISATIONS.remove(clientId);
 	}
 
 	@Override
