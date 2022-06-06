@@ -11,14 +11,14 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<maven.compiler.target>1.7</maven.compiler.target>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<sourceCompliance>1.7</sourceCompliance>
-		<targetCompliance>1.7</targetCompliance>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<sourceCompliance>1.8</sourceCompliance>
+		<targetCompliance>1.8</targetCompliance>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- QA Settings -->
 		<wc.qa.skip>true</wc.qa.skip>
-		<wcomponent.version>1.4.22</wcomponent.version>
+		<wcomponent.version>1.5.28</wcomponent.version>
 		<multiproject.basedir>${basedir}</multiproject.basedir>
 	</properties>
 
@@ -412,7 +412,7 @@
 				<plugin>
 					<groupId>org.eclipse.jetty</groupId>
 					<artifactId>jetty-maven-plugin</artifactId>
-					<version>9.2.20.v20161216</version>
+					<version>9.4.46.v20220331</version>
 				</plugin>
 
 			</plugins>
